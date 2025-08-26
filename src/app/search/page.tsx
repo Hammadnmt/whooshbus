@@ -6,6 +6,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { CalendarIcon } from "lucide-react";
+import Trip from "@/components/Trip";
 export default function Search() {
   const [date, setDate] = useState(null);
   const TIME_ZONE = [
@@ -85,6 +86,9 @@ export default function Search() {
           </Button>
         </div>
       </div>
+      {/* <div className="w-full max-w-6xl mt-12">
+        <Trip />
+      </div> */}
     </div>
   );
 }
