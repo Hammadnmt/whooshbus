@@ -1,12 +1,12 @@
 "use client";
-import React, { useState } from "react";
+import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import GoogleIcon from "../../../public/googleSvg";
 
-export default function page() {
+export default function Page() {
   const [linkSent, setLinkSent] = useState(false);
   const handleLogin = () => {};
   const handleGoogleLogin = () => {};

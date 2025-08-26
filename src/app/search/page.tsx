@@ -6,7 +6,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { CalendarIcon } from "lucide-react";
-export default function page() {
+export default function Search() {
   const [date, setDate] = useState(null);
   const TIME_ZONE = [
     "Karachi",
