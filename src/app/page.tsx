@@ -111,7 +111,7 @@ export default function HomePage() {
               <Card className="shadow-md rounded-2xl">
                 <CardContent className="p-6">
                   <p className="text-gray-600 mb-3">
-                    "Amazing service! Seats were comfy and booking was super easy."
+                    &quot;Amazing service! Seats were comfy and booking was super easy.&quot;
                   </p>
                   <div className="flex items-center gap-2">
                     <Star className="text-yellow-500 h-5 w-5" />

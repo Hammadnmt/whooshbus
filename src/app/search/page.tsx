@@ -8,7 +8,6 @@ import { cn } from "@/lib/utils";
 import { CalendarIcon, MapPin, Navigation } from "lucide-react";
 import { format } from "date-fns";
 import { motion } from "framer-motion";
-import Trip from "@/components/Trip";
 
 export default function Search() {
   const [date, setDate] = useState<Date | null>(null);
@@ -31,7 +30,7 @@ export default function Search() {
     // TODO: implement search
   };
 
-  const handleInputChange = (field: string, value: any) => {
+  const handleInputChange = (field: string, value: string) => {
     console.log(field, value);
   };
 
