@@ -191,9 +191,9 @@ export default function HomePage() {
                 placeholder="Your email"
                 className="px-3 py-2 rounded-l-lg text-white text-sm focus:outline-none w-full"
               />
-              <button className="bg-[#ffcb05] text-black px-4 py-2 rounded-r-lg text-sm font-medium hover:bg-yellow-400 transition">
+              <Button className="bg-[#ffcb05] text-black px-4 py-2 rounded-r-lg text-sm font-medium hover:bg-yellow-400 transition">
                 Subscribe
-              </button>
+              </Button>
             </form>
           </div>
         </div>
