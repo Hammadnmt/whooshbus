@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 import { CalendarIcon, MapPin, Navigation } from "lucide-react";
 import { format } from "date-fns";
 import { motion } from "framer-motion";
+import TripCard from "@/components/Trip";
 
 export default function Search() {
   const [date, setDate] = useState<Date | null>(null);
@@ -134,6 +135,7 @@ export default function Search() {
       {/* <div className="w-full max-w-6xl mt-12">
         <Trip />
       </div> */}
+      <TripCard />
     </div>
   );
 }
