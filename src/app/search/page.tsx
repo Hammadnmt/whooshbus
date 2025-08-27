@@ -120,21 +120,17 @@ export default function Search() {
           </Popover>
         </div>
 
-        {/* Search Button */}
         <div className="flex justify-center">
           <Button
             onClick={searchTrips}
-            className="w-48 py-6 bg-[#541554] hover:bg-[#3f103f] text-white font-semibold text-lg shadow-lg rounded-xl"
+            className="w-48 py-6 bg-[#541554] hover:bg-[#3f103f] text-white font-semibold text-base shadow-lg rounded-xl"
           >
-            Find My Trip 🚀
+            Find My Trip
           </Button>
         </div>
       </motion.div>
 
       {/* Search Results Placeholder */}
-      {/* <div className="w-full max-w-6xl mt-12">
-        <Trip />
-      </div> */}
       <TripCard />
     </div>
   );

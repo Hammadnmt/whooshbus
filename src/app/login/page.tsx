@@ -80,7 +80,8 @@ export default function Page() {
                     <p className="text-sm text-gray-500 mt-1">Your journey starts here</p>
                   </CardHeader>
                   <CardContent className="space-y-4">
-                    <Input name="email" placeholder="you@example.com" className="bg-gray-100" />
+                    <Input type="email" name="email" placeholder="you@example.com" className="bg-gray-100" />
+                    <Input type="password" name="password" placeholder="••••••••" className="bg-gray-100" />
                   </CardContent>
                   <CardFooter className="flex flex-col gap-4 mt-4">
                     <Button className="w-full bg-[#611f69] hover:bg-[#531f5c]" onClick={handleLogin}>
@@ -117,7 +118,13 @@ export default function Page() {
                 <p className="text-sm text-gray-500 mt-1">Start your journey with us</p>
               </CardHeader>
               <CardContent className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <Input name="firstName" placeholder="First Name" className="bg-gray-100" />
+                  <Input name="lastName" placeholder="Last Name" className="bg-gray-100" />
+                </div>
                 <Input name="email" placeholder="you@example.com" className="bg-gray-100" />
+                <Input type="password" name="password" placeholder="Password" className="bg-gray-100" />
+                <Input name="phone" placeholder="Phone Number" className="bg-gray-100" />
               </CardContent>
               <CardFooter className="flex flex-col gap-4 mt-4">
                 <Button className="w-full bg-[#611f69] hover:bg-[#531f5c]" onClick={handleLogin}>

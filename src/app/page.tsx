@@ -6,8 +6,10 @@ import { motion } from "framer-motion";
 import { Bus, Star, Facebook, Twitter, Instagram, ArrowRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function HomePage() {
+  const router = useRouter();
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#fdfcfa] via-[#f5f5fc] to-[#faf9f7] text-gray-800">
       {/* Hero Section */}
@@ -34,7 +36,11 @@ export default function HomePage() {
           transition={{ delay: 0.8 }}
           className="mt-6"
         >
-          <Button size="lg" className="bg-[#541554] hover:bg-[#6a1b6e] text-white">
+          <Button
+            size="lg"
+            className="bg-[#541554] hover:bg-[#6a1b6e] text-white"
+            onClick={() => router.push("/search")}
+          >
             Book Your Trip <ArrowRight className="ml-2 h-5 w-5" />
           </Button>
         </motion.div>
