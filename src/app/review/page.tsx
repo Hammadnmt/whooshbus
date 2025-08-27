@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import Timeline from "@/components/ui/timeline";
 
 export default function TripReview() {
@@ -56,10 +57,32 @@ export default function TripReview() {
               </div>
             </div>
           </div>
-
           {/* Right side: Fare Summary */}
-          <div className="w-full md:w-[30%] bg-[#f5f5fc] p-2 border-l border-gray-200 flex flex-col gap-6">
-            sas
+          <div className="w-full md:w-[30%] bg-[#f5f5fc] p-4 border-l border-gray-200 flex flex-col gap-4 rounded-lg shadow-sm">
+            <h2 className="text-lg font-semibold text-gray-800">Fare Summary</h2>
+
+            {/* Number of seats */}
+            <div className="flex justify-between text-sm text-gray-700">
+              <span>Seats Selected</span>
+              <span>2</span>
+            </div>
+
+            {/* Amount */}
+            <div className="flex justify-between text-sm text-gray-700">
+              <span>Fare per Seat</span>
+              <span>$50</span>
+            </div>
+
+            {/* Total */}
+            <div className="flex justify-between text-base font-semibold text-gray-900 border-t pt-2">
+              <span>Total Amount</span>
+              <span>$100</span>
+            </div>
+            <div className="flex items-center justify-center">
+              <Button className="mt-4 w-1/2 bg-[#541554] hover:bg-[#3f103f] text-white">
+                Proceed to Pay
+              </Button>
+            </div>
           </div>
         </div>
       </div>
