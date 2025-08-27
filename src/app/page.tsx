@@ -75,7 +75,7 @@ export default function HomePage() {
       <section className="py-16 px-6 bg-white">
         <h2 className="text-3xl font-bold text-center mb-10">Popular Destinations</h2>
         <div className="flex gap-6 overflow-x-auto no-scrollbar px-2">
-          {["lahore", "karachi", "islamabad", "multan"].map((city, i) => (
+          {["Lahore", "Karachi", "Islamabad", "Multan"].map((city, i) => (
             <motion.div
               key={i}
               whileHover={{ scale: 1.05 }}
