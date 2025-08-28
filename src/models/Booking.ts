@@ -15,7 +15,7 @@ export interface IBooking extends Document {
   seats: { seatNumber: string; class?: string }[];
   passengers: IPassenger[];
   totalFare: number;
-  fareBreakdown?: Record<string, any>;
+  fareBreakdown?: Record<string, BookingStatus>;
   status: BookingStatus;
   payment?: Types.ObjectId;
   pnr: string;

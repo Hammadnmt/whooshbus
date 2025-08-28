@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import User from "@/models/User";
+import { User } from "@/models/User";
 import { successResponse } from "@/utils/apiResponse";
 import { handleApiError } from "@/utils/errorHandler";
 import { connectDB } from "@/lib/db";

@@ -1,15 +1,45 @@
 "use client";
-import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import GoogleIcon from "../../../public/googleSvg";
 import { motion } from "framer-motion";
+import { loginAction, registerAction } from "../actions/authActions";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 export default function Page() {
-  const [linkSent, setLinkSent] = useState(false);
-  const handleLogin = () => setLinkSent(true);
+  const router = useRouter();
+  async function handleLogin(formData: FormData) {
+    try {
+      const result = await loginAction(formData);
+      if (result?.success) {
+        toast.success("Login Successful");
+        router.push("/");
+      } else {
+        toast.error(result?.message || "Login failed");
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      toast.error("An unexpected error occurred. Please try again.");
+    }
+  }
+  async function handleRegister(formData: FormData) {
+    try {
+      const result = await registerAction(formData);
+      console.log(result);
+      if (result?.success) {
+        toast.success(result?.message);
+        router.push("/login");
+      } else {
+        toast.error(result?.message || "Registration failed");
+      }
+    } catch (error) {
+      console.error("SignUp error:", error);
+      toast.error("An unexpected error occurred. Please try again.");
+    }
+  }
   const handleGoogleLogin = () => {};
 
   return (
@@ -64,47 +94,35 @@ export default function Page() {
           {/* Login Form */}
           <TabsContent value="Login">
             <Card className="bg-white rounded-xl shadow-md">
-              {linkSent ? (
-                <>
-                  <CardHeader className="text-center">
-                    <CardTitle className="text-xl text-green-600">Email Sent</CardTitle>
-                  </CardHeader>
-                  <CardContent className="text-center text-sm text-gray-600">
-                    Check your inbox for a magic link to continue.
-                  </CardContent>
-                </>
-              ) : (
-                <>
-                  <CardHeader className="text-center">
-                    <CardTitle className="text-2xl font-bold text-gray-800">Sign in to WhooshBus</CardTitle>
-                    <p className="text-sm text-gray-500 mt-1">Your journey starts here</p>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <Input type="email" name="email" placeholder="you@example.com" className="bg-gray-100" />
-                    <Input type="password" name="password" placeholder="••••••••" className="bg-gray-100" />
-                  </CardContent>
-                  <CardFooter className="flex flex-col gap-4 mt-4">
-                    <Button className="w-full bg-[#611f69] hover:bg-[#531f5c]" onClick={handleLogin}>
-                      Continue →
-                    </Button>
+              <CardHeader className="text-center">
+                <CardTitle className="text-2xl font-bold text-gray-800">Sign in to WhooshBus</CardTitle>
+                <p className="text-sm text-gray-500 mt-1">Your journey starts here</p>
+              </CardHeader>
+              <CardContent>
+                <form action={handleLogin} className="space-y-4">
+                  <Input type="email" name="email" placeholder="you@example.com" className="bg-gray-100" />
+                  <Input type="password" name="password" placeholder="••••••••" className="bg-gray-100" />
+                  <Button className="w-full bg-[#611f69] hover:bg-[#531f5c]" type="submit">
+                    Continue →
+                  </Button>
+                </form>
+              </CardContent>
+              <CardFooter className="flex flex-col gap-4 mt-4">
+                {/* Divider */}
+                <div className="flex items-center gap-2 text-xs text-gray-400">
+                  <span className="flex-1 h-px bg-gray-200" />
+                  or continue with
+                  <span className="flex-1 h-px bg-gray-200" />
+                </div>
 
-                    {/* Divider */}
-                    <div className="flex items-center gap-2 text-xs text-gray-400">
-                      <span className="flex-1 h-px bg-gray-200" />
-                      or continue with
-                      <span className="flex-1 h-px bg-gray-200" />
-                    </div>
-
-                    <Button
-                      className="flex justify-center items-center gap-2 border rounded-md px-4 py-2 bg-white cursor-pointer hover:bg-accent"
-                      onClick={handleGoogleLogin}
-                    >
-                      <GoogleIcon width={16} height={16} />
-                      <span className="text-sm font-medium text-black">Google</span>
-                    </Button>
-                  </CardFooter>
-                </>
-              )}
+                <Button
+                  className="flex justify-center items-center gap-2 border rounded-md px-4 py-2 bg-white cursor-pointer hover:bg-accent"
+                  onClick={handleGoogleLogin}
+                >
+                  <GoogleIcon width={16} height={16} />
+                  <span className="text-sm font-medium text-black">Google</span>
+                </Button>
+              </CardFooter>
             </Card>
           </TabsContent>
 
@@ -117,20 +135,21 @@ export default function Page() {
                 </CardTitle>
                 <p className="text-sm text-gray-500 mt-1">Start your journey with us</p>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <Input name="firstName" placeholder="First Name" className="bg-gray-100" />
-                  <Input name="lastName" placeholder="Last Name" className="bg-gray-100" />
-                </div>
-                <Input name="email" placeholder="you@example.com" className="bg-gray-100" />
-                <Input type="password" name="password" placeholder="Password" className="bg-gray-100" />
-                <Input name="phone" placeholder="Phone Number" className="bg-gray-100" />
+              <CardContent>
+                <form action={handleRegister} className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <Input name="fname" placeholder="First Name" className="bg-gray-100" />
+                    <Input name="lname" placeholder="Last Name" className="bg-gray-100" />
+                  </div>
+                  <Input name="email" placeholder="you@example.com" className="bg-gray-100" />
+                  <Input type="password" name="password" placeholder="Password" className="bg-gray-100" />
+                  <Input name="phone" placeholder="Phone Number" className="bg-gray-100" />
+                  <Button type="submit" className="w-full bg-[#611f69] hover:bg-[#531f5c]">
+                    Sign Up →
+                  </Button>
+                </form>
               </CardContent>
               <CardFooter className="flex flex-col gap-4 mt-4">
-                <Button className="w-full bg-[#611f69] hover:bg-[#531f5c]" onClick={handleLogin}>
-                  Sign Up →
-                </Button>
-
                 <div className="flex items-center gap-2 text-xs text-gray-400">
                   <span className="flex-1 h-px bg-gray-200" />
                   or continue with

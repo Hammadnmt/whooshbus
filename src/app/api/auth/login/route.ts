@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { connectDB } from "@/lib/db";
 import { IUser, User } from "@/models/User";
+import validPassword from "@/utils/validPassword";
 
 /**
  * POST /api/auth/login
@@ -26,10 +26,8 @@ export async function POST(req: NextRequest) {
     if (!user) {
       return NextResponse.json({ success: false, message: "Invalid credentials" }, { status: 401 });
     }
-
     // Check password
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-    if (!isPasswordValid) {
+    if (!validPassword) {
       return NextResponse.json({ success: false, message: "Invalid credentials" }, { status: 401 });
     }
 
@@ -59,11 +57,9 @@ export async function POST(req: NextRequest) {
     });
 
     return response;
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Unknown error";
     console.error("Login error:", error);
-    return NextResponse.json(
-      { success: false, message: "Server error", error: error.message },
-      { status: 500 }
-    );
+    return NextResponse.json({ success: false, message: "Server error", error: message }, { status: 500 });
   }
 }

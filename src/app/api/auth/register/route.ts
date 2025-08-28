@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-import bcrypt from "bcryptjs";
 import { connectDB } from "@/lib/db";
-import { User, IUser } from "@/models/User";
+import { User } from "@/models/User";
+import { hashPassword } from "@/utils/bcryptUtils";
 
 /**
  * @route   POST /api/auth/register
@@ -12,10 +12,10 @@ export async function POST(req: Request) {
   try {
     await connectDB();
     const body = await req.json();
-    const { email, password, firstName, lastName, phone } = body;
+    const { firstname, lastname, email, password, phone } = body;
 
     // Validate required fields
-    if (!email || !password || !firstName || !lastName) {
+    if (!email || !password || !firstname || !lastname) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
@@ -26,21 +26,22 @@ export async function POST(req: Request) {
     }
 
     // Hash password
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await hashPassword(password);
 
     // Create new user
-    const newUser: IUser = await User.create({
+    await User.create({
       email,
       password: hashedPassword,
-      firstName,
-      lastName,
+      firstName: firstname,
+      lastName: lastname,
       phone,
       provider: "local",
       role: "user",
     });
-    return NextResponse.json({ message: "User registered successfully" }, { status: 201 });
-  } catch (error: any) {
-    console.error("Register error:", error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    return NextResponse.json({ success: true, message: "User registered successfully" }, { status: 201 });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Unknown error";
+    console.error("Login error:", error);
+    return NextResponse.json({ success: false, message: "Server error", error: message }, { status: 500 });
   }
 }
