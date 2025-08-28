@@ -5,10 +5,11 @@ import { handleApiError } from "@/utils/errorHandler";
 import { connectDB } from "@/lib/db";
 
 // GET /api/users/:id → get user by ID
-export async function GET(_: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     await connectDB();
-    const user = await User.findById(params.id).select("-password");
+    const { id } = await params;
+    const user = await User.findById(id).select("-password");
     if (!user) return Response.json({ success: false, message: "User not found" }, { status: 404 });
 
     return Response.json(successResponse(user, "User fetched successfully"));
@@ -18,12 +19,13 @@ export async function GET(_: NextRequest, { params }: { params: { id: string } }
 }
 
 // PUT /api/users/:id → update user
-export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     await connectDB();
+    const { id } = await params;
     const body = await req.json();
 
-    const updatedUser = await User.findByIdAndUpdate(params.id, body, {
+    const updatedUser = await User.findByIdAndUpdate(id, body, {
       new: true,
       runValidators: true,
     }).select("-password");
@@ -36,10 +38,11 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
 }
 
 // DELETE /api/users/:id → delete user
-export async function DELETE(_: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     await connectDB();
-    const deletedUser = await User.findByIdAndDelete(params.id);
+    const { id } = await params;
+    const deletedUser = await User.findByIdAndDelete(id);
 
     if (!deletedUser) return Response.json({ success: false, message: "User not found" }, { status: 404 });
 

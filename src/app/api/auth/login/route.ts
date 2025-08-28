@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
 import { connectDB } from "@/lib/db";
 import { IUser, User } from "@/models/User";
-import validPassword from "@/utils/validPassword";
+import { validPassword } from "@/utils/bcryptUtils";
 
 /**
  * POST /api/auth/login
@@ -26,8 +26,8 @@ export async function POST(req: NextRequest) {
     if (!user) {
       return NextResponse.json({ success: false, message: "Invalid credentials" }, { status: 401 });
     }
-    // Check password
-    if (!validPassword) {
+    const isPasswordValid = await validPassword(password, user.password);
+    if (!isPasswordValid) {
       return NextResponse.json({ success: false, message: "Invalid credentials" }, { status: 401 });
     }
 
