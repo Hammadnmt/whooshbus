@@ -3,11 +3,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import GoogleIcon from "../../../public/googleSvg";
 import { motion } from "framer-motion";
 import { loginAction, registerAction } from "../actions/authActions";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
+import GoogleIcon from "../../../public/googleSvg";
 
 export default function Page() {
   const router = useRouter();
@@ -40,7 +41,11 @@ export default function Page() {
       toast.error("An unexpected error occurred. Please try again.");
     }
   }
-  const handleGoogleLogin = () => {};
+  const handleGoogleLogin = () => {
+    signIn("google", {
+      callbackUrl: "/",
+    });
+  };
 
   return (
     <div className="flex md:flex-row h-screen bg-gray-50">
@@ -156,7 +161,10 @@ export default function Page() {
                   <span className="flex-1 h-px bg-gray-200" />
                 </div>
 
-                <Button className="flex justify-center items-center gap-2 border rounded-md px-4 py-2 bg-white cursor-pointer hover:bg-accent">
+                <Button
+                  className="flex justify-center items-center gap-2 border rounded-md px-4 py-2 bg-white cursor-pointer hover:bg-accent"
+                  onClick={handleGoogleLogin}
+                >
                   <GoogleIcon width={16} height={16} />
                   <span className="text-sm font-medium text-black">Google</span>
                 </Button>
