@@ -26,7 +26,7 @@ export default function UserProfile() {
         <Card className="relative backdrop-blur-md bg-white/70 shadow-md rounded-2xl border border-gray-200">
           <CardContent className="flex items-center gap-6 p-6">
             <Avatar className="h-20 w-20 ring-4 ring-primary/10">
-              <AvatarImage src={session?.user?.image} />
+              <AvatarImage src={session?.user?.image || undefined} />
               <AvatarFallback>{session?.user?.name?.charAt(0)}</AvatarFallback>
             </Avatar>
             <div className="flex-1">
