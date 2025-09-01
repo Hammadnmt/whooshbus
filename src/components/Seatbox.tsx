@@ -3,11 +3,11 @@ import React from "react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 interface DummySeatBoxProps {
-  seatNum: number;
+  seatNum: string;
   reserved?: boolean;
   gender?: "male" | "female" | null;
   isSelected?: boolean;
-  onSeatClick?: (event: React.MouseEvent, seatNumber: number) => void;
+  onSeatClick?: (event: React.MouseEvent, seatNumber: string) => void;
   onGenderSelect?: (gender: "male" | "female") => void;
 }
 

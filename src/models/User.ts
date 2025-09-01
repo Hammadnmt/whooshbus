@@ -1,7 +1,8 @@
-import { Schema, model, Document, models } from "mongoose";
+import { Schema, model, Document, models, Types } from "mongoose";
 import { Provider, UserRole } from "@/types/ENUMS";
 
 export interface IUser extends Document {
+  _id: Types.ObjectId;
   firstName: string;
   lastName: string;
   email: string;

@@ -1,11 +1,14 @@
 import { connectDB } from "@/lib/db";
 import { User } from "@/models/User";
-import NextAuth, { AuthOptions, RequestInternal } from "next-auth";
+import NextAuth, { AuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import CrendentialsProvider from "next-auth/providers/credentials";
 import authService from "@/services/authService";
-import { NextResponse } from "next/server";
 
+interface Credentials {
+  email: string;
+  password: string;
+}
 export const authOptions: AuthOptions = {
   providers: [
     GoogleProvider({
@@ -18,14 +21,16 @@ export const authOptions: AuthOptions = {
         email: { label: "Email", type: "email", placeholder: "hell0@gmail.com" },
         password: { label: "Password", type: "password", placeholder: "*******" },
       },
-      async authorize(credentials: Record<"email" | "password", string> | undefined) {
+      async authorize(credentials) {
         await connectDB();
         console.log("Login is here", credentials);
-        const user = await authService.findUser(credentials?.email);
+        const { email } = credentials as Credentials;
+        const user = await authService.findUser(email);
         if (!user) {
           return null;
         }
         return {
+          id: user._id.toString(),
           email: user.email,
           role: user.role,
           name: `${user.firstName} ${user.lastName}`,
@@ -77,7 +82,9 @@ export const authOptions: AuthOptions = {
       return token;
     },
     async session({ session, token }) {
-      session.user.email = token.email;
+      if (session.user) {
+        session.user.email = token.email;
+      }
       return session;
     },
   },

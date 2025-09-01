@@ -1,6 +1,7 @@
-import { Schema, model, models } from "mongoose";
+import { Schema, Types, model, models } from "mongoose";
 
-interface ISeatLayout {
+export interface ISeatLayout {
+  _id?: Types.ObjectId;
   seatNumber: string;
   class: string;
   position?: string;

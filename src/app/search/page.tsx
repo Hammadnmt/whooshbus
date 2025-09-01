@@ -8,14 +8,14 @@ import { cn } from "@/lib/utils";
 import { CalendarIcon, MapPin, Navigation } from "lucide-react";
 import { format } from "date-fns";
 import { motion } from "framer-motion";
-import TripCard from "@/components/Trip";
 import { searchTrips } from "@/actions/trip/tripAction";
-import { ITrip } from "@/models/Trip";
+import { ITrip, ITripPopulated } from "@/models/Trip";
 import { toast } from "sonner";
+import TripCard from "@/components/Trip";
 
 export default function Search() {
   const [date, setDate] = useState<Date | null>(null);
-  const [trips, setTrips] = useState<ITrip[] | null>(null);
+  const [trips, setTrips] = useState<ITripPopulated[] | null>(null);
 
   const TIME_ZONE = [
     "Karachi",
@@ -30,10 +30,10 @@ export default function Search() {
     "Sialkot",
     "Gujranwala",
   ];
-  console.log("trips", trips);
   const handleSubmit = async (formData: FormData) => {
     const trips = await searchTrips(formData, date);
-    if (trips.length == 0) toast.success("No Trip for this Route/Date");
+    if (trips.length == 0) toast.warning("No Trip for this Route/Date");
+    toast.success("Trips Fetched");
     setTrips(trips);
   };
 
@@ -131,9 +131,11 @@ export default function Search() {
           </div>
         </form>
       </motion.div>
-
-      {/* Search Results Placeholder */}
-      <TripCard />
+      <div className="flex flex-col gap-4">
+        {trips &&
+          trips?.length > 0 &&
+          trips?.map((trip) => <TripCard trip={trip} key={trip._id.toString()} />)}
+      </div>
     </div>
   );
 }

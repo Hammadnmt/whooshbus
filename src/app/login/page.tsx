@@ -4,7 +4,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
-import { loginAction, registerAction } from "../actions/authActions";
+import { registerAction } from "../actions/authActions";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";

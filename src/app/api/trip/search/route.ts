@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import tripService from "@/services/tripService";
-import { Bus } from "@/models/Bus";
 
 export async function GET(request: NextRequest) {
   try {
@@ -16,7 +15,10 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Invalid date" }, { status: 400 });
     }
     const trips = await tripService.searchTrips({ origin, destination, selectedDate });
-    return NextResponse.json({ message: "Trip fetched Successfully", data: trips?.length > 0 ? trips : [] });
+    return NextResponse.json({
+      message: "Trip fetched Successfully",
+      data: trips && trips?.length > 0 ? trips : [],
+    });
   } catch (error) {
     console.error("Error in GET /api/trip/search:", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });

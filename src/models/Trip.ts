@@ -1,13 +1,20 @@
 import { Schema, model, models, Document, Types } from "mongoose";
 import { TripStatus } from "@/types/ENUMS";
+import { IRoute } from "./Route";
+import { IBus } from "./Bus";
 
 export interface ITrip extends Document {
+  _id: Types.ObjectId;
   route: Types.ObjectId;
   bus: Types.ObjectId;
   departureAt: Date;
   arrivalAt: Date;
   baseFare: number;
   status: TripStatus;
+}
+export interface ITripPopulated extends Omit<ITrip, "route" | "bus"> {
+  route: IRoute;
+  bus: IBus;
 }
 
 const tripSchema = new Schema<ITrip>(
