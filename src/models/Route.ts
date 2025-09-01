@@ -1,4 +1,4 @@
-import { Schema, model, Document } from "mongoose";
+import { Schema, model, models, Document } from "mongoose";
 
 export interface IRoute extends Document {
   originStation: string;
@@ -24,4 +24,4 @@ const routeSchema = new Schema<IRoute>(
   { timestamps: true }
 );
 
-export const Route = model<IRoute>("Route", routeSchema);
+export const Route = models.Route || model<IRoute>("Route", routeSchema);

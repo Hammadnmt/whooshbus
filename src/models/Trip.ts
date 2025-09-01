@@ -1,4 +1,4 @@
-import { Schema, model, Document, Types } from "mongoose";
+import { Schema, model, models, Document, Types } from "mongoose";
 import { TripStatus } from "@/types/ENUMS";
 
 export interface ITrip extends Document {
@@ -28,4 +28,4 @@ const tripSchema = new Schema<ITrip>(
 
 tripSchema.index({ departureAt: 1 });
 
-export const Trip = model<ITrip>("Trip", tripSchema);
+export const Trip = models.Trip || model<ITrip>("Trip", tripSchema);

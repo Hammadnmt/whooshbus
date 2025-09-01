@@ -15,6 +15,7 @@ export default function UserProfile() {
   function handleLogout() {
     signOut({
       callbackUrl: "/login",
+      redirect: true,
     });
     toast.success("Logged out successfully");
   }
@@ -31,7 +32,6 @@ export default function UserProfile() {
             </Avatar>
             <div className="flex-1">
               <h2 className="text-2xl font-bold tracking-tight">{session?.user?.name}</h2>
-              <p className="text-muted-foreground text-sm">Backend Developer | Travel Enthusiast</p>
               <div className="flex gap-2 mt-2">
                 <Badge variant="secondary">Gold Member</Badge>
                 <Badge variant="outline">50+ Bookings</Badge>

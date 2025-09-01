@@ -14,16 +14,12 @@ export default function Page() {
   const router = useRouter();
   async function handleLogin(formData: FormData) {
     try {
-      const result = await loginAction(formData);
-      if (result?.success) {
-        toast.success("Login Successful");
-        router.push("/");
-      } else {
-        toast.error(result?.message || "Login failed");
-      }
+      const email = formData.get("email");
+      const password = formData.get("password");
+      const res = await signIn("credentials", { email, password, callbackUrl: "/profile", redirect: true });
+      console.log("ress", res);
     } catch (error) {
-      console.error("Login error:", error);
-      toast.error("An unexpected error occurred. Please try again.");
+      console.log("errro", error);
     }
   }
   async function handleRegister(formData: FormData) {

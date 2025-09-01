@@ -1,4 +1,4 @@
-import { Schema, model, Document } from "mongoose";
+import { Schema, model, Document, models } from "mongoose";
 import { Provider, UserRole } from "@/types/ENUMS";
 
 export interface IUser extends Document {
@@ -44,4 +44,4 @@ const userSchema = new Schema<IUser>(
   { timestamps: true }
 );
 
-export const User = model<IUser>("User", userSchema);
+export const User = models.User || model<IUser>("User", userSchema);

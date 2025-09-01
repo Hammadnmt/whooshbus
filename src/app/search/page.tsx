@@ -9,9 +9,13 @@ import { CalendarIcon, MapPin, Navigation } from "lucide-react";
 import { format } from "date-fns";
 import { motion } from "framer-motion";
 import TripCard from "@/components/Trip";
+import { searchTrips } from "@/actions/trip/tripAction";
+import { ITrip } from "@/models/Trip";
+import { toast } from "sonner";
 
 export default function Search() {
   const [date, setDate] = useState<Date | null>(null);
+  const [trips, setTrips] = useState<ITrip[] | null>(null);
 
   const TIME_ZONE = [
     "Karachi",
@@ -26,13 +30,11 @@ export default function Search() {
     "Sialkot",
     "Gujranwala",
   ];
-
-  const searchTrips = () => {
-    // TODO: implement search
-  };
-
-  const handleInputChange = (field: string, value: string) => {
-    console.log(field, value);
+  console.log("trips", trips);
+  const handleSubmit = async (formData: FormData) => {
+    const trips = await searchTrips(formData, date);
+    if (trips.length == 0) toast.success("No Trip for this Route/Date");
+    setTrips(trips);
   };
 
   return (
@@ -63,71 +65,71 @@ export default function Search() {
         transition={{ duration: 0.6 }}
         className="w-full max-w-6xl p-8 bg-white/90 backdrop-blur-md rounded-3xl shadow-xl border border-gray-200 space-y-6"
       >
-        <div className="flex flex-wrap justify-center gap-6">
+        <form action={handleSubmit} className="flex flex-col gap-5 ">
           {/* Origin */}
-          <Select name="Origin" onValueChange={(value) => handleInputChange("Origin", value)}>
-            <SelectTrigger className="w-64 bg-white border-gray-300 shadow-sm hover:shadow-md transition">
-              <MapPin className="w-4 h-4 mr-2 text-[#541554]" />
-              <SelectValue placeholder="Select Origin" />
-            </SelectTrigger>
-            <SelectContent className="max-h-60">
-              {TIME_ZONE.map((zone, index) => (
-                <SelectItem key={index} value={zone}>
-                  {zone}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <div className="flex flex-wrap justify-center gap-6">
+            <Select name="origin">
+              <SelectTrigger className="w-64 bg-white border-gray-300 shadow-sm hover:shadow-md transition">
+                <MapPin className="w-4 h-4 mr-2 text-[#541554]" />
+                <SelectValue placeholder="Select Origin" />
+              </SelectTrigger>
+              <SelectContent className="max-h-60">
+                {TIME_ZONE.map((zone, index) => (
+                  <SelectItem key={index} value={zone}>
+                    {zone}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
 
-          {/* Destination */}
-          <Select name="Destination" onValueChange={(value) => handleInputChange("Destination", value)}>
-            <SelectTrigger className="w-64 bg-white border-gray-300 shadow-sm hover:shadow-md transition">
-              <Navigation className="w-4 h-4 mr-2 text-[#541554]" />
-              <SelectValue placeholder="Select Destination" />
-            </SelectTrigger>
-            <SelectContent className="max-h-60">
-              {TIME_ZONE.map((zone, index) => (
-                <SelectItem key={index} value={zone}>
-                  {zone}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+            {/* Destination */}
+            <Select name="destination">
+              <SelectTrigger className="w-64 bg-white border-gray-300 shadow-sm hover:shadow-md transition">
+                <Navigation className="w-4 h-4 mr-2 text-[#541554]" />
+                <SelectValue placeholder="Select Destination" />
+              </SelectTrigger>
+              <SelectContent className="max-h-60">
+                {TIME_ZONE.map((zone, index) => (
+                  <SelectItem key={index} value={zone}>
+                    {zone}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
 
-          {/* Date Picker */}
-          <Popover>
-            <PopoverTrigger asChild>
-              <button
-                className={cn(
-                  "w-48 flex justify-start items-center gap-2 px-3 py-2 text-sm bg-white border border-gray-300 rounded-lg shadow-sm hover:shadow-md transition",
-                  !date && "text-gray-400"
-                )}
-              >
-                <CalendarIcon className="w-4 h-4 text-[#541554]" />
-                {date ? format(date, "PPP") : "Pick a date"}
-              </button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="center">
-              <Calendar
-                mode="single"
-                selected={date ?? undefined}
-                onSelect={(selectedDate) => {
-                  setDate(selectedDate ?? null);
-                  handleInputChange("date", selectedDate ? format(selectedDate, "yyyy-MM-dd") : "");
-                }}
-              />
-            </PopoverContent>
-          </Popover>
-        </div>
-
-        <div className="flex justify-center">
-          <Button
-            onClick={searchTrips}
-            className="w-48 py-6 bg-[#541554] hover:bg-[#3f103f] text-white font-semibold text-base shadow-lg rounded-xl"
-          >
-            Find My Trip
-          </Button>
-        </div>
+            {/* Date Picker */}
+            <Popover>
+              <PopoverTrigger asChild>
+                <button
+                  className={cn(
+                    "w-48 flex justify-start items-center gap-2 px-3 py-2 text-sm bg-white border border-gray-300 rounded-lg shadow-sm hover:shadow-md transition",
+                    !date && "text-gray-400"
+                  )}
+                >
+                  <CalendarIcon className="w-4 h-4 text-[#541554]" />
+                  {date ? format(date, "PPP") : "Pick a date"}
+                </button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="center">
+                <Calendar
+                  mode="single"
+                  selected={date ?? undefined}
+                  onSelect={(selectedDate) => {
+                    setDate(selectedDate ?? null);
+                  }}
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
+          <div className="flex justify-center">
+            <Button
+              type="submit"
+              className="w-48 py-6 bg-[#541554] hover:bg-[#3f103f] text-white font-semibold text-base shadow-lg rounded-xl"
+            >
+              Find My Trip
+            </Button>
+          </div>
+        </form>
       </motion.div>
 
       {/* Search Results Placeholder */}

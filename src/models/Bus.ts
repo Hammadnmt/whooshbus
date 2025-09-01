@@ -1,4 +1,4 @@
-import { Schema, model, Types } from "mongoose";
+import { Schema, model, models } from "mongoose";
 
 interface ISeatLayout {
   seatNumber: string;
@@ -7,7 +7,6 @@ interface ISeatLayout {
 }
 
 export interface IBus extends Document {
-  operator: Types.ObjectId;
   regNumber: string;
   model?: string;
   capacity: number;
@@ -16,7 +15,6 @@ export interface IBus extends Document {
 
 const busSchema = new Schema<IBus>(
   {
-    operator: { type: Schema.Types.ObjectId, ref: "Operator", required: true },
     regNumber: { type: String, required: true, unique: true },
     model: { type: String },
     capacity: { type: Number, required: true, min: 1 },
@@ -31,4 +29,4 @@ const busSchema = new Schema<IBus>(
   { timestamps: true }
 );
 
-export const Bus = model<IBus>("Bus", busSchema);
+export const Bus = models.Bus || model<IBus>("Bus", busSchema);
