@@ -3,6 +3,7 @@ import { ITrip, ITripPopulated, Trip } from "@/models/Trip";
 import routeService from "./routeService";
 import { connectDB } from "@/lib/db";
 import { endOfDay, startOfDay } from "date-fns";
+import { Bus } from "@/models/Bus";
 
 const tripService = {
   searchTrips: async ({

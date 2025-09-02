@@ -32,7 +32,11 @@ export default function Search() {
   ];
   const handleSubmit = async (formData: FormData) => {
     const trips = await searchTrips(formData, date);
-    if (trips.length == 0) toast.warning("No Trip for this Route/Date");
+    console.log("trips", trips);
+    if (trips.length == 0) {
+      toast.warning("No Trip for this Route/Date");
+      return;
+    }
     toast.success("Trips Fetched");
     setTrips(trips);
   };
