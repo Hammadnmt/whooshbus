@@ -1,15 +1,17 @@
+import { connectDB } from "@/lib/db";
 import { Route } from "@/models/Route";
 
 const routeService = {
   getRoute: async (origin: string, destination: string) => {
     try {
+      await connectDB();
+
       const filter = {
         originStation: origin,
         destinationStation: destination,
       };
       console.log(origin, destination);
       const route = await Route.findOne(filter);
-      console.log("Route is here in service", route);
       if (!route) {
         return null;
       }
