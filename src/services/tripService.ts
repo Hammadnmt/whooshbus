@@ -1,9 +1,10 @@
 import { IRoute } from "@/models/Route";
-import { ITrip, ITripPopulated, Trip } from "@/models/Trip";
+import { ITripPopulated, Trip } from "@/models/Trip";
 import routeService from "./routeService";
 import { connectDB } from "@/lib/db";
 import { endOfDay, startOfDay } from "date-fns";
-import { Bus } from "@/models/Bus";
+import "@/models/Bus";
+import "@/models/Route";
 
 const tripService = {
   searchTrips: async ({
@@ -26,7 +27,7 @@ const tripService = {
         route: route._id,
         departureAt: { $gte: start, $lte: end },
       };
-      const trips: ITripPopulated[] = await Trip.find(filter).populate("route").populate("bus");
+      const trips: ITripPopulated[] = await Trip.find(filter).populate("bus").populate("route");
       return trips;
     } catch (error: Error | unknown) {
       console.log(error);
