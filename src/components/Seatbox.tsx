@@ -7,8 +7,7 @@ interface DummySeatBoxProps {
   reserved?: boolean;
   gender?: "male" | "female" | null;
   isSelected?: boolean;
-  onSeatClick?: (event: React.MouseEvent, seatNumber: string) => void;
-  onGenderSelect?: (gender: "male" | "female") => void;
+  onSeatClick: (seatNumber: string, gender: "male" | "female") => void;
 }
 
 export const DummySeatBox = ({
@@ -16,14 +15,16 @@ export const DummySeatBox = ({
   reserved = false,
   gender = null,
   isSelected = false,
-  onSeatClick = () => {},
-  onGenderSelect = () => {},
+  onSeatClick,
 }: DummySeatBoxProps) => {
+  // Seat coloring logic
   const seatColor =
     reserved || isSelected
       ? gender === "male"
         ? "bg-[#364F6B] text-white"
-        : "bg-[#FC5185] text-white"
+        : gender === "female"
+        ? "bg-[#FC5185] text-white"
+        : "bg-yellow-400 text-white" // fallback if selected but gender not chosen
       : "bg-[#F5F5F5] text-gray-800";
 
   return (
@@ -31,11 +32,12 @@ export const DummySeatBox = ({
       <PopoverTrigger asChild>
         <div
           className={`w-10 h-10 flex items-center justify-center rounded-lg text-sm font-semibold cursor-pointer transition-all ${seatColor}`}
-          onClick={(e) => onSeatClick(e, seatNum)}
         >
           {seatNum}
         </div>
       </PopoverTrigger>
+
+      {/* Gender Selection Popover */}
       <PopoverContent side="top" align="center" className="w-64">
         <p className="font-medium text-sm text-gray-700">Select Gender for Seat</p>
         <div className="flex justify-around gap-3 mt-3">
@@ -43,7 +45,7 @@ export const DummySeatBox = ({
             <div
               key={g}
               className="text-center p-2 rounded cursor-pointer hover:bg-gray-100"
-              onClick={() => onGenderSelect(g)}
+              onClick={() => onSeatClick(seatNum, g)}
             >
               <div className="flex items-center gap-2">
                 <div

@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -15,13 +15,23 @@ import { DummySeatBox } from "./Seatbox";
 import { format } from "date-fns";
 import { ITripPopulated } from "@/models/Trip";
 import { ISeatLayout } from "@/models/Bus";
+import { useBooking } from "@/context/BookingContext"; // ✅ import context
 
 export default function TripCard({ trip }: { trip: ITripPopulated }) {
-  const [showSeats, setShowSeats] = useState(false);
+  const { seatData, addSeat } = useBooking();
+  const router = useRouter();
 
+  /** Handle proceed → navigate with seat info */
+  const handleProceed = () => {
+    if (seatData.length === 0) return; // optional: prevent proceeding without selection
+
+    router.push(`/review/${trip._id}`);
+  };
+
+  // Format timings
   const depDate = new Date(trip.departureAt);
   const arrDate = new Date(trip.arrivalAt);
-  console.log(showSeats);
+
   return (
     <Dialog>
       {/* Trip Card */}
@@ -33,7 +43,7 @@ export default function TripCard({ trip }: { trip: ITripPopulated }) {
             <div className="flex flex-col items-center lg:items-start text-center lg:text-left gap-1">
               <small className="text-gray-500 text-xs">{format(depDate, "dd MMM, yyyy")}</small>
               <h4 className="text-gray-800 font-bold text-lg flex items-center self-stretch gap-1">
-                <Clock className="h- w-5 text-[#541554]" /> {format(depDate, "hh:mm")}
+                <Clock className="h-5 w-5 text-[#541554]" /> {format(depDate, "hh:mm")}
               </h4>
               <p className="text-sm text-gray-600 flex items-center gap-1">
                 <MapPin className="h-4 w-4 text-gray-400" /> {trip.route?.originStation}
@@ -51,7 +61,7 @@ export default function TripCard({ trip }: { trip: ITripPopulated }) {
                 <Clock className="h-5 w-5 text-[#541554]" /> {format(arrDate, "hh:mm")}
               </h4>
               <p className="text-sm text-gray-600 flex items-center gap-1">
-                <MapPin className="h-4 w-4 text-gray-400" /> {trip.route.destinationStation}
+                <MapPin className="h-4 w-4 text-gray-400" /> {trip.route?.destinationStation}
               </p>
             </div>
           </div>
@@ -69,10 +79,7 @@ export default function TripCard({ trip }: { trip: ITripPopulated }) {
           {/* CTA Button */}
           <div className="flex justify-center items-center">
             <DialogTrigger asChild>
-              <Button
-                className="bg-[#541554] hover:bg-[#3d0e3f] text-white font-semibold rounded-full px-4 py-3 shadow-lg transition-all duration-300"
-                onClick={() => setShowSeats(true)}
-              >
+              <Button className="bg-[#541554] hover:bg-[#3d0e3f] text-white font-semibold rounded-full px-4 py-3 shadow-lg transition-all duration-300">
                 Show Seats
               </Button>
             </DialogTrigger>
@@ -86,15 +93,26 @@ export default function TripCard({ trip }: { trip: ITripPopulated }) {
           <DialogTitle className="text-xl font-semibold text-gray-800">Select Your Seats</DialogTitle>
         </DialogHeader>
 
-        {/* Dynamic Seat Grid */}
+        {/* Seat Grid */}
         <div className="mt-4 grid grid-cols-5 gap-3">
-          {trip.bus.seatLayout.map((seat: ISeatLayout) => (
-            <DummySeatBox key={seat._id?.toString()} seatNum={seat.seatNumber} />
-          ))}
+          {trip.bus.seatLayout.map((seat: ISeatLayout) => {
+            const currentSeat = seatData.find((s) => s.seat === seat.seatNumber);
+            return (
+              <DummySeatBox
+                key={seat._id?.toString()}
+                seatNum={seat.seatNumber}
+                gender={currentSeat?.gender}
+                isSelected={!!currentSeat}
+                onSeatClick={addSeat}
+              />
+            );
+          })}
         </div>
 
         <DialogFooter>
-          <Button className="bg-green-700 hover:bg-green-800 text-white">Proceed</Button>
+          <Button onClick={handleProceed} className="bg-green-700 hover:bg-green-800 text-white">
+            Proceed
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

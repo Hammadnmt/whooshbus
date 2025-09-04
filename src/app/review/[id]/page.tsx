@@ -1,12 +1,30 @@
-"use client";
-import React from "react";
+// app/review/[id]/page.tsx
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import Timeline from "@/components/ui/timeline";
-import { motion } from "framer-motion";
 import { ShieldCheck, Star, RefreshCcw } from "lucide-react";
+import { format } from "date-fns";
+import FareSummary from "./FareSummary";
 
-export default function TripReview() {
+// tell Next.js this is server-rendered & fresh
+export const dynamic = "force-dynamic";
+
+async function getTrip(id: string) {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/trip/${id}`, {
+    cache: "no-store", // disable caching for always fresh data
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch trip");
+  }
+
+  const data = await res.json();
+  return data.data; // your trip object
+}
+
+export default async function TripReview({ params }: { params: { id: string } }) {
+  const trip = await getTrip(params.id);
+
   return (
     <div className="p-4 bg-[#f8f8f8] min-h-screen">
       <div className="flex flex-col">
@@ -17,31 +35,37 @@ export default function TripReview() {
         </div>
 
         {/* Body */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="flex flex-col mt-4 md:flex-row bg-white rounded-b-2xl overflow-hidden shadow-xl"
-        >
+        <div className="flex flex-col mt-4 md:flex-row bg-white rounded-b-2xl overflow-hidden shadow-xl">
           {/* Left side: Trip Info */}
           <div className="w-full md:w-[70%] p-6">
             {/* Operator */}
             <div className="flex items-center gap-4 text-[#541554] font-semibold text-lg mb-6">
               <span className="text-2xl">🚍</span>
-              <span>Daewoo Express</span>
+              <span>
+                {trip.bus.model} ({trip.bus.regNumber})
+              </span>
             </div>
 
             {/* Timeline */}
             <div className="flex items-start gap-6 mb-6">
-              <Timeline />
               <div className="flex flex-col gap-6">
                 <div>
-                  <h3 className="text-gray-800 font-semibold">Lahore</h3>
-                  <h4 className="text-gray-600 text-sm">Departure: 10:00 AM</h4>
+                  <h3 className="text-gray-800 font-semibold">{trip.route.originStation}</h3>
+                  <h4 className="text-gray-600 text-sm">
+                    Departure: {format(new Date(trip.departureAt), "hh:mm a")}
+                  </h4>
                 </div>
+                {trip.route.stops.map((stop: any) => (
+                  <div key={stop._id}>
+                    <h3 className="text-gray-800 font-semibold">{stop.name}</h3>
+                    <h4 className="text-gray-600 text-sm">Stop after {stop.arrivalOffsetMin / 60} hrs</h4>
+                  </div>
+                ))}
                 <div>
-                  <h3 className="text-gray-800 font-semibold">Islamabad</h3>
-                  <h4 className="text-gray-600 text-sm">Arrival: 02:30 PM</h4>
+                  <h3 className="text-gray-800 font-semibold">{trip.route.destinationStation}</h3>
+                  <h4 className="text-gray-600 text-sm">
+                    Arrival: {format(new Date(trip.arrivalAt), "hh:mm a")}
+                  </h4>
                 </div>
               </div>
             </div>
@@ -63,43 +87,18 @@ export default function TripReview() {
             <div className="bg-[#f0f0fd] p-4 rounded-lg w-full md:w-[70%] mb-6 shadow-sm">
               <div className="flex justify-between mb-2 text-sm">
                 <span className="opacity-60">Pickup Point</span>
-                <span>Lahore Terminal</span>
+                <span>{trip.route.originStation} Terminal</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="opacity-60">Travel Duration</span>
-                <span>4 hrs 30 mins</span>
+                <span>{Math.floor(trip.route.approxDurationMin / 60)} hrs</span>
               </div>
             </div>
           </div>
 
           {/* Right side: Fare Summary */}
-          <motion.div
-            initial={{ opacity: 0, x: 50 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.2, duration: 0.6 }}
-            className="w-full md:w-[30%] bg-[#fdfdfd] p-6 border-l border-gray-200 flex flex-col gap-4 shadow-inner relative overflow-hidden"
-          >
-            <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-[#541554] to-[#ffcb05]" />
-            <h2 className="text-lg font-semibold text-gray-800">Fare Summary</h2>
-
-            <div className="flex justify-between text-sm text-gray-700">
-              <span>Seats Selected</span>
-              <span>2</span>
-            </div>
-            <div className="flex justify-between text-sm text-gray-700">
-              <span>Fare per Seat</span>
-              <span>$50</span>
-            </div>
-            <div className="flex justify-between text-base font-semibold text-gray-900 border-t pt-2">
-              <span>Total Amount</span>
-              <span>$100</span>
-            </div>
-
-            <Button className="mt-6 bg-[#541554] hover:bg-[#3f103f] text-white py-6 rounded-xl text-lg shadow-lg">
-              Proceed to Pay
-            </Button>
-          </motion.div>
-        </motion.div>
+          <FareSummary trip={trip} />
+        </div>
       </div>
     </div>
   );
