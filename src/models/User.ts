@@ -1,5 +1,6 @@
 import { Schema, model, Document, models, Types } from "mongoose";
 import { Provider, UserRole } from "@/types/ENUMS";
+import { hashPassword } from "@/utils/bcryptUtils";
 
 export interface IUser extends Document {
   _id: Types.ObjectId;
@@ -10,7 +11,7 @@ export interface IUser extends Document {
   password?: string | null;
   provider: Provider;
   providerId?: string;
-  profilePicture?: string;
+  profilePicture?: string | undefined | null;
   role: UserRole;
   createdAt: Date;
   updatedAt: Date;
@@ -44,5 +45,20 @@ const userSchema = new Schema<IUser>(
   },
   { timestamps: true }
 );
+
+userSchema.pre("save", async function (next) {
+  const user = this as IUser;
+
+  if (!user.isModified("password") || !user.password) {
+    return next();
+  }
+
+  try {
+    user.password = await hashPassword(user.password);
+    next();
+  } catch (error) {
+    next(error as Error);
+  }
+});
 
 export const User = models.User || model<IUser>("User", userSchema);

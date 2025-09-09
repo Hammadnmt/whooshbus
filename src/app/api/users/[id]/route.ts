@@ -1,6 +1,6 @@
 import { NextRequest } from "next/server";
 import { User } from "@/models/User";
-import { successResponse } from "@/utils/apiResponse";
+import { errorResponse, successResponse } from "@/utils/apiResponse";
 import { handleApiError } from "@/utils/errorHandler";
 import { connectDB } from "@/lib/db";
 
@@ -29,9 +29,8 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
       new: true,
       runValidators: true,
     }).select("-password");
-    if (!updatedUser) return Response.json({ success: false, message: "User not found" }, { status: 404 });
-
-    return Response.json(successResponse(updatedUser, "User updated successfully"));
+    if (!updatedUser) return errorResponse("User not found", 400);
+    return successResponse(updatedUser, "User updated successfully");
   } catch (error) {
     return handleApiError(error, "Failed to update user");
   }
@@ -44,9 +43,9 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
     const { id } = await params;
     const deletedUser = await User.findByIdAndDelete(id);
 
-    if (!deletedUser) return Response.json({ success: false, message: "User not found" }, { status: 404 });
+    if (!deletedUser) return errorResponse("User not found", 400);
 
-    return Response.json(successResponse(null, "User deleted successfully"));
+    return successResponse(null, "User deleted successfully");
   } catch (error) {
     return handleApiError(error, "Failed to delete user");
   }

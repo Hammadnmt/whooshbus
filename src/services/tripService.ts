@@ -32,6 +32,14 @@ const tripService = {
       console.log(error);
     }
   },
+  getTripById: async (id: string) => {
+    try {
+      const trip: ITripPopulated = await Trip.findById(id).populate("bus").populate("route");
+      return trip;
+    } catch (error) {
+      console.log("error", error);
+    }
+  },
 };
 
 export default tripService;

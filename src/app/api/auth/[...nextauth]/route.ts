@@ -23,12 +23,9 @@ export const authOptions: AuthOptions = {
       },
       async authorize(credentials) {
         await connectDB();
-        console.log("Login is here", credentials);
-        const { email } = credentials as Credentials;
-        const user = await authService.findUser(email);
-        if (!user) {
-          return null;
-        }
+        const { email, password } = credentials as Credentials;
+        const user = await authService.loginUser({ email, password });
+        if (!user) return null;
         return {
           id: user._id.toString(),
           email: user.email,
@@ -39,51 +36,50 @@ export const authOptions: AuthOptions = {
     }),
   ],
   session: { strategy: "jwt" },
-  cookies: {
-    sessionToken: {
-      name: "token",
-      options: {
-        httpOnly: true,
-        sameSite: "lax",
-        path: "/",
-        secure: process.env.NODE_ENV === "production",
-      },
-    },
-  },
   callbacks: {
     async signIn({ user, account }) {
       await connectDB();
       if (account?.provider == "google") {
-        const [firstName, lastName] = user.name?.split(" ") ?? ["", ""];
         const existingUser = await User.findOne({ email: user.email });
         if (!existingUser) {
-          await User.create({
-            firstName,
-            lastName,
-            email: user.email,
-            profilePicture: user.image,
+          const [firstname, lastname] = user.name?.split(" ") ?? ["", ""];
+          console.log("firstName,lastName", firstname, lastname);
+          const newuser = await authService.registerOAuthUser({
+            firstname,
+            lastname,
+            email: user.email as string,
             provider: account?.provider,
-            providerId: account?.providerAccountId,
+            providerId: account.providerAccountId,
+            profilePicture: user.image,
           });
+          if (!newuser) {
+            return false;
+          }
           return true;
         }
       }
       return true;
     },
-    async jwt({ token, user, account }) {
-      console.log("accound in jwt", account);
-      console.log("user in jwt", user);
-
+    async jwt({ token, user }) {
       if (user) {
+        token.id = user.id;
         token.email = user.email;
-        token.role = user.role;
         token.name = user.name;
+        token.role = user.role;
+        token.image = user.image;
       }
+      console.log("inside token manipulation", token);
       return token;
     },
     async session({ session, token }) {
-      if (session.user) {
-        session.user.email = token.email;
+      if (token) {
+        session.user = {
+          id: token.id,
+          email: token.email as string,
+          name: token.name as string,
+          role: token.role as string,
+          image: token.image as string,
+        };
       }
       return session;
     },

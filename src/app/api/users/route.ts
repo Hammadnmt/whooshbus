@@ -9,11 +9,9 @@ export async function POST(req: NextRequest) {
   try {
     await connectDB();
     const body = await req.json();
-
     const user = new User(body);
     await user.save();
-
-    return Response.json(successResponse(user, "User created successfully"), { status: 201 });
+    return successResponse(user, "User created successfully");
   } catch (error) {
     return handleApiError(error, "Failed to create user");
   }
@@ -23,8 +21,8 @@ export async function POST(req: NextRequest) {
 export async function GET() {
   try {
     await connectDB();
-    const users = await User.find().select("-password"); // never return raw password
-    return Response.json(successResponse(users, "Users fetched successfully"));
+    const users = await User.find().select("-password");
+    return successResponse(users, "Users fetched successfully");
   } catch (error) {
     return handleApiError(error, "Failed to fetch users");
   }

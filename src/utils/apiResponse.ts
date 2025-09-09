@@ -4,8 +4,8 @@ export interface ApiResponse<T = unknown> {
   data?: T;
 }
 
-export function successResponse<T>(data: T, message = "Success"): ApiResponse<T> {
-  return { success: true, message, data };
+export function successResponse<T>(data: T, message = "Success") {
+  return Response.json({ success: true, message, data });
 }
 
 export function errorResponse(message = "Something went wrong", status = 500) {

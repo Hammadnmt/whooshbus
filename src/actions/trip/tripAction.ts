@@ -16,5 +16,5 @@ export async function searchTrips(formData: FormData, date: Date | null) {
   );
 
   const trips = await res.json();
-  return trips.data;
+  return trips;
 }

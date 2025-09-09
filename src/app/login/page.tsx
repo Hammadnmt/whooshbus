@@ -17,7 +17,6 @@ export default function Page() {
       const email = formData.get("email");
       const password = formData.get("password");
       const res = await signIn("credentials", { email, password, callbackUrl: "/search", redirect: true });
-      console.log("ress", res);
     } catch (error) {
       console.log("errro", error);
     }
