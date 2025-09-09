@@ -5,7 +5,6 @@ const routeService = {
   getRoute: async (origin: string, destination: string) => {
     try {
       await connectDB();
-
       const filter = {
         originStation: origin,
         destinationStation: destination,

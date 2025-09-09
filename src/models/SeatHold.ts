@@ -1,4 +1,4 @@
-import { Schema, model, Document, Types } from "mongoose";
+import { Schema, model, models, Document, Types } from "mongoose";
 
 export interface ISeatHold extends Document {
   trip: Types.ObjectId;
@@ -17,7 +17,9 @@ const seatHoldSchema = new Schema<ISeatHold>(
   { timestamps: true }
 );
 
-// TTL index to auto-expire holds
-seatHoldSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
+seatHoldSchema.index({ trip: 1, expiresAt: 1 });
+seatHoldSchema.index({ trip: 1, "seats.seatNumber": 1 });
+seatHoldSchema.index({ user: 1 });
+seatHoldSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 }); // For TTL
 
-export const SeatHold = model<ISeatHold>("SeatHold", seatHoldSchema);
+export const SeatHold = models.SeatHold || model<ISeatHold>("SeatHold", seatHoldSchema);

@@ -1,10 +1,6 @@
 // app/success/page.tsx
-import Stripe from "stripe";
+import stripe from "@/lib/stripe";
 import { redirect } from "next/navigation";
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2024-06-20",
-});
 
 export default async function SuccessPage({ searchParams }: { searchParams: { session_id?: string } }) {
   const sessionId = searchParams.session_id;

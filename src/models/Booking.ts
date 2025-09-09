@@ -51,4 +51,9 @@ const bookingSchema = new Schema<IBooking>(
   { timestamps: true }
 );
 
+bookingSchema.index({ trip: 1, "seats.seatNumber": 1 });
+bookingSchema.index({ user: 1 });
+bookingSchema.index({ pnr: 1 }, { unique: true });
+bookingSchema.index({ status: 1 });
+
 export const Booking = model<IBooking>("Booking", bookingSchema);

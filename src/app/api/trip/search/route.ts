@@ -1,5 +1,7 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import tripService from "@/services/tripService";
+import { handleApiError } from "@/utils/errorHandler";
+import { errorResponse, successResponse } from "@/utils/apiResponse";
 
 export async function GET(request: NextRequest) {
   try {
@@ -8,19 +10,16 @@ export async function GET(request: NextRequest) {
     const destination = searchParams.get("destination");
     const date = searchParams.get("date");
     if (!origin || !destination || !date) {
-      return NextResponse.json({ error: "Missing required parameters" }, { status: 400 });
+      return errorResponse("Missing Origin and Destination", 400);
     }
     const selectedDate = new Date(date);
     if (isNaN(selectedDate.getTime())) {
-      return NextResponse.json({ error: "Invalid date" }, { status: 400 });
+      return errorResponse("Enter Valid Date", 400);
     }
     const trips = await tripService.searchTrips({ origin, destination, selectedDate });
-    return NextResponse.json({
-      message: "Trip fetched Successfully",
-      data: trips && trips?.length > 0 ? trips : [],
-    });
+    return successResponse(trips, "Fetched Successfully");
   } catch (error) {
     console.error("Error in GET /api/trip/search:", error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    return handleApiError(error, "Something Bad happened");
   }
 }

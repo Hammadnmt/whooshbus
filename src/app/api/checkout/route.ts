@@ -1,11 +1,6 @@
+import stripe from "@/lib/stripe";
+import { successResponse } from "@/utils/apiResponse";
 import { handleApiError } from "@/utils/errorHandler";
-import { NextResponse } from "next/server";
-import Stripe from "stripe";
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2024-06-20", // latest stable
-});
-
 export async function POST(req: Request) {
   try {
     const body = await req.json();
@@ -30,8 +25,7 @@ export async function POST(req: Request) {
       success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/review/cancel`,
     });
-
-    return NextResponse.json({ id: session.id });
+    return successResponse({ id: session.id });
   } catch (err) {
     console.error(err);
     return handleApiError(err, "Checkout Failed");

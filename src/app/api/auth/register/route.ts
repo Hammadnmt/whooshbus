@@ -1,7 +1,8 @@
-import { NextResponse } from "next/server";
+import { handleApiError } from "@/utils/errorHandler";
+import { registerSchema } from "@/validators/auth.schema";
+import { errorResponse, successResponse } from "@/utils/apiResponse";
 import { connectDB } from "@/lib/db";
-import { User } from "@/models/User";
-import { hashPassword } from "@/utils/bcryptUtils";
+import authService from "@/services/authService";
 
 /**
  * @route   POST /api/auth/register
@@ -12,36 +13,16 @@ export async function POST(req: Request) {
   try {
     await connectDB();
     const body = await req.json();
-    const { firstname, lastname, email, password, phone } = body;
-
-    // Validate required fields
-    if (!email || !password || !firstname || !lastname) {
-      return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+    const parsed = registerSchema.safeParse(body);
+    if (!parsed.success) {
+      return errorResponse(parsed.error.issues[0].message, 400);
     }
-
-    // Check if user already exists
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return NextResponse.json({ error: "Email is already registered" }, { status: 409 });
-    }
-
-    // Hash password
-    const hashedPassword = await hashPassword(password);
-
-    // Create new user
-    await User.create({
-      email,
-      password: hashedPassword,
-      firstName: firstname,
-      lastName: lastname,
-      phone,
-      provider: "local",
-      role: "user",
-    });
-    return NextResponse.json({ success: true, message: "User registered successfully" }, { status: 201 });
+    const { firstname, lastname, email, password, phone } = parsed.data;
+    const user = await authService.registerUser({ firstname, lastname, email, password, phone });
+    if (!user) return errorResponse("Email already exists!", 400);
+    return successResponse({ email: user.email }, "Welcome to whooshBus");
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Unknown error";
     console.error("Login error:", error);
-    return NextResponse.json({ success: false, message: "Server error", error: message }, { status: 500 });
+    return handleApiError(error, "Registration Failed");
   }
 }

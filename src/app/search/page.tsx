@@ -9,7 +9,7 @@ import { CalendarIcon, MapPin, Navigation } from "lucide-react";
 import { format } from "date-fns";
 import { motion } from "framer-motion";
 import { searchTrips } from "@/actions/trip/tripAction";
-import { ITrip, ITripPopulated } from "@/models/Trip";
+import { ITripPopulated } from "@/models/Trip";
 import { toast } from "sonner";
 import TripCard from "@/components/Trip";
 
@@ -33,12 +33,12 @@ export default function Search() {
   const handleSubmit = async (formData: FormData) => {
     const trips = await searchTrips(formData, date);
     console.log("trips", trips);
-    if (trips.length == 0) {
-      toast.warning("No Trip for this Route/Date");
+    if (trips?.data && trips?.data.length === 0) {
+      toast.warning(trips.message);
       return;
     }
-    toast.success("Trips Fetched");
-    setTrips(trips);
+    toast(trips.message);
+    setTrips(trips.data);
   };
 
   return (

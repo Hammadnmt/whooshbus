@@ -1,13 +1,17 @@
 // app/review/[id]/page.tsx
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import Timeline from "@/components/ui/timeline";
 import { ShieldCheck, Star, RefreshCcw } from "lucide-react";
 import { format } from "date-fns";
 import FareSummary from "./FareSummary";
+import { ITripPopulated } from "@/models/Trip";
 
 // tell Next.js this is server-rendered & fresh
 export const dynamic = "force-dynamic";
+
+interface IStops {
+  name: string;
+  arrivalOffsetMin: number;
+}
 
 async function getTrip(id: string) {
   const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/trip/${id}`, {
@@ -23,7 +27,7 @@ async function getTrip(id: string) {
 }
 
 export default async function TripReview({ params }: { params: { id: string } }) {
-  const trip = await getTrip(params.id);
+  const trip: ITripPopulated = await getTrip(params.id);
 
   return (
     <div className="p-4 bg-[#f8f8f8] min-h-screen">
@@ -55,8 +59,8 @@ export default async function TripReview({ params }: { params: { id: string } })
                     Departure: {format(new Date(trip.departureAt), "hh:mm a")}
                   </h4>
                 </div>
-                {trip.route.stops.map((stop: any) => (
-                  <div key={stop._id}>
+                {trip?.route?.stops?.map((stop: IStops) => (
+                  <div key={stop.name}>
                     <h3 className="text-gray-800 font-semibold">{stop.name}</h3>
                     <h4 className="text-gray-600 text-sm">Stop after {stop.arrivalOffsetMin / 60} hrs</h4>
                   </div>
@@ -91,7 +95,7 @@ export default async function TripReview({ params }: { params: { id: string } })
               </div>
               <div className="flex justify-between text-sm">
                 <span className="opacity-60">Travel Duration</span>
-                <span>{Math.floor(trip.route.approxDurationMin / 60)} hrs</span>
+                <span>{Math.floor(trip?.route?.approxDurationMin ?? 0 / 60)} hrs</span>
               </div>
             </div>
           </div>

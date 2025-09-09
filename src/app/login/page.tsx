@@ -16,7 +16,7 @@ export default function Page() {
     try {
       const email = formData.get("email");
       const password = formData.get("password");
-      const res = await signIn("credentials", { email, password, callbackUrl: "/profile", redirect: true });
+      const res = await signIn("credentials", { email, password, callbackUrl: "/profile" });
       console.log("ress", res);
     } catch (error) {
       console.log("errro", error);
