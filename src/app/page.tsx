@@ -42,7 +42,7 @@ export default function HomePage() {
           <Button
             size="lg"
             className="bg-[#541554] hover:bg-[#6a1b6e] text-white"
-            onClick={() => router.push("/search")}
+            onClick={() => router.push("/login")}
           >
             Book Your Trip <ArrowRight className="ml-2 h-5 w-5" />
           </Button>
