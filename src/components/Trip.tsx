@@ -20,8 +20,6 @@ import { useBooking } from "@/context/BookingContext"; // ✅ import context
 export default function TripCard({ trip }: { trip: ITripPopulated }) {
   const { seatData, addSeat } = useBooking();
   const router = useRouter();
-
-  /** Handle proceed → navigate with seat info */
   const handleProceed = () => {
     if (seatData.length === 0) return; // optional: prevent proceeding without selection
 

@@ -17,6 +17,7 @@ export async function GET(request: NextRequest) {
       return errorResponse("Enter Valid Date", 400);
     }
     const trips = await tripService.searchTrips({ origin, destination, selectedDate });
+
     return successResponse(trips, "Fetched Successfully");
   } catch (error) {
     console.error("Error in GET /api/trip/search:", error);

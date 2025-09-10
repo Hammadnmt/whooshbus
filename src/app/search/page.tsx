@@ -8,10 +8,10 @@ import { cn } from "@/lib/utils";
 import { CalendarIcon, MapPin, Navigation } from "lucide-react";
 import { format } from "date-fns";
 import { motion } from "framer-motion";
-import { searchTrips } from "@/actions/trip/tripAction";
 import { ITripPopulated } from "@/models/Trip";
 import { toast } from "sonner";
 import TripCard from "@/components/Trip";
+import { searchTrips } from "../actions/searchTrip";
 
 export default function Search() {
   const [date, setDate] = useState<Date | null>(null);
@@ -32,7 +32,6 @@ export default function Search() {
   ];
   const handleSubmit = async (formData: FormData) => {
     const trips = await searchTrips(formData, date);
-    console.log("trips", trips);
     if (trips?.data && trips?.data.length === 0) {
       toast.warning(trips.message);
       return;
@@ -44,7 +43,7 @@ export default function Search() {
   return (
     <div className="relative flex flex-col items-center min-h-screen bg-gradient-to-b from-[#f9f9ff] via-[#f5f5fc] to-[#f8f8f8]">
       {/* Background Travel Vibe */}
-      <div className="absolute inset-0 bg-[url('/bus-pattern.svg')] bg-cover opacity-5 pointer-events-none" />
+      <div className="absolute inset-0 bg-cover opacity-5 pointer-events-none" />
 
       {/* Hero Text */}
       <motion.div

@@ -16,15 +16,22 @@ export default function Page() {
     try {
       const email = formData.get("email");
       const password = formData.get("password");
-      const res = await signIn("credentials", { email, password, callbackUrl: "/search", redirect: true });
+      signIn("credentials", { email, password, callbackUrl: "/search", redirect: true })
+        .then((res) => {
+          if (res?.ok) {
+            toast.success("Logged in successfully!");
+          }
+        })
+        .catch((err) => {
+          toast.error("Login failed. Please check your credentials.", err.message);
+        });
     } catch (error) {
-      console.log("errro", error);
+      console.log("error", error);
     }
   }
   async function handleRegister(formData: FormData) {
     try {
       const result = await registerAction(formData);
-      console.log(result);
       if (result?.success) {
         toast.success(result?.message);
         router.push("/login");
@@ -39,12 +46,19 @@ export default function Page() {
   const handleGoogleLogin = () => {
     signIn("google", {
       callbackUrl: "/",
-    });
+    })
+      .then((res) => {
+        if (res?.ok) {
+          toast.success("Logged in with Google successfully!");
+        }
+      })
+      .catch((err) => {
+        toast.error("Google login failed. Please try again.", err.message);
+      });
   };
 
   return (
     <div className="flex md:flex-row h-screen bg-gray-50">
-      {/* Left Section - Branding */}
       <div className="hidden md:flex w-1/2 px-16 bg-gradient-to-br from-[#F3E8FF] to-[#EDE9FE] flex-col items-start justify-center relative overflow-hidden">
         <motion.div
           initial={{ opacity: 0, y: 30 }}

@@ -26,7 +26,6 @@ const tripService = {
         departureAt: { $gte: start, $lte: end },
       };
       const trips: ITripPopulated[] = await Trip.find(filter).populate("bus").populate("route");
-      console.log("Route is here in Trip service", route);
       return trips;
     } catch (error: Error | unknown) {
       console.log(error);

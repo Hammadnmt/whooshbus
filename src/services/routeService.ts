@@ -9,7 +9,7 @@ const routeService = {
         originStation: origin,
         destinationStation: destination,
       };
-      console.log(origin, destination);
+
       const route = await Route.findOne(filter);
       if (!route) {
         return null;

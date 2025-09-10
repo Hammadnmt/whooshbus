@@ -43,7 +43,7 @@ export const authOptions: AuthOptions = {
         const existingUser = await User.findOne({ email: user.email });
         if (!existingUser) {
           const [firstname, lastname] = user.name?.split(" ") ?? ["", ""];
-          console.log("firstName,lastName", firstname, lastname);
+
           const newuser = await authService.registerOAuthUser({
             firstname,
             lastname,
@@ -68,7 +68,7 @@ export const authOptions: AuthOptions = {
         token.role = user.role;
         token.image = user.image;
       }
-      console.log("inside token manipulation", token);
+
       return token;
     },
     async session({ session, token }) {
