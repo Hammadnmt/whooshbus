@@ -26,8 +26,9 @@ async function getTrip(id: string) {
   return data.data; // your trip object
 }
 
-export default async function TripReview({ params }: { params: { id: string } }) {
-  const trip: ITripPopulated = await getTrip(params.id);
+export default async function TripReview({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const trip: ITripPopulated = await getTrip(id);
 
   return (
     <div className="p-4 bg-[#f8f8f8] min-h-screen">

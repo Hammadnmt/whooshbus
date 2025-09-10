@@ -16,14 +16,20 @@ import { format } from "date-fns";
 import { ITripPopulated } from "@/models/Trip";
 import { ISeatLayout } from "@/models/Bus";
 import { useBooking } from "@/context/BookingContext"; // ✅ import context
+import { seatHoldAction } from "@/app/actions/seatHoldAction";
+import { toast } from "sonner";
 
 export default function TripCard({ trip }: { trip: ITripPopulated }) {
   const { seatData, addSeat } = useBooking();
-  const router = useRouter();
-  const handleProceed = () => {
+  // const router = useRouter();
+  const handleProceed = async () => {
     if (seatData.length === 0) return; // optional: prevent proceeding without selection
+    const result = await seatHoldAction(trip._id, seatData);
+    if (result.success) {
+      toast.success(result.message);
+    }
 
-    router.push(`/review/${trip._id}`);
+    // router.push(`/review/${trip._id}`);
   };
 
   // Format timings

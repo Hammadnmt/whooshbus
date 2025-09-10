@@ -2,8 +2,12 @@
 import stripe from "@/lib/stripe";
 import { redirect } from "next/navigation";
 
-export default async function SuccessPage({ searchParams }: { searchParams: { session_id?: string } }) {
-  const sessionId = searchParams.session_id;
+export default async function SuccessPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ sessionId: string }>;
+}) {
+  const { sessionId } = await searchParams;
 
   if (!sessionId) {
     redirect("/"); // No session → send user home

@@ -12,24 +12,18 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
       return errorResponse("Invalid Trip", 400);
     }
 
-    const { userId, seatNumbers } = await req.json();
+    const { seatData } = await req.json();
 
     // Validate input
-    if (!userId || !seatNumbers || !Array.isArray(seatNumbers) || seatNumbers.length === 0) {
+    if (!seatData || !Array.isArray(seatData) || seatData.length === 0) {
       return handleApiError(null, "User ID and seat numbers array are required");
     }
 
-    if (!Types.ObjectId.isValid(userId)) {
-      return errorResponse("Invalid User", 400);
-    }
+    // if (!Types.ObjectId.isValid(userId)) {
+    //   return errorResponse("Invalid User", 400);
+    // }
 
-    const result = await seatService.holdSeat(id, userId, seatNumbers);
-
-    if (!result.success) {
-      return errorResponse(result.message, 400);
-    }
-
-    return successResponse(result.data, result.message);
+    return successResponse({}, "Seats held successfully");
   } catch (error) {
     return handleApiError(error, "Failed to hold seats");
   }
