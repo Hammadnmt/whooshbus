@@ -16,7 +16,7 @@ export async function getHeldSeats(tripId: Types.ObjectId) {
 
     // Flatten into a single array of seats
     const heldSeats = holds.flatMap((hold) =>
-      hold.seats.map((seat) => ({
+      hold.seats.map((seat: { seatNumber: string; gender: string }) => ({
         seatNumber: seat.seatNumber,
         gender: seat.gender,
       }))

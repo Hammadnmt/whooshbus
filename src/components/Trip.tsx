@@ -31,8 +31,8 @@ export default function TripCard({ trip }: { trip: ITripPopulated }) {
   useEffect(() => {
     async function fetchHeld() {
       const result = await getHeldSeats(trip._id);
-      if (result.success) {
-        setHeldSeats(result?.data.map((s) => s.seatNumber));
+      if (result.success && result.data) {
+        setHeldSeats(result?.data?.map((s) => s.seatNumber));
       } else {
         toast.error(result.message || "Failed to fetch held seats");
       }

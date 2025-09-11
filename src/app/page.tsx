@@ -4,14 +4,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { motion } from "framer-motion";
 import { Bus, Star, Facebook, Twitter, Instagram, ArrowRight } from "lucide-react";
-import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 export default function HomePage() {
   const router = useRouter();
-  const { data: session } = useSession();
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#fdfcfa] via-[#f5f5fc] to-[#faf9f7] text-gray-800">
       {/* Hero Section */}
