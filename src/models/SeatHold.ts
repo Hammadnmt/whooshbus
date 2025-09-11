@@ -3,7 +3,7 @@ import { Schema, model, models, Document, Types } from "mongoose";
 export interface ISeatHold extends Document {
   trip: Types.ObjectId;
   user: Types.ObjectId;
-  seats: { seatNumber: string }[];
+  seats: { seatNumber: string; gender: string }[];
   expiresAt: Date;
 }
 
@@ -11,7 +11,9 @@ const seatHoldSchema = new Schema<ISeatHold>(
   {
     trip: { type: Schema.Types.ObjectId, ref: "Trip", required: true },
     user: { type: Schema.Types.ObjectId, ref: "User", required: true },
-    seats: [{ seatNumber: { type: String, required: true } }],
+    seats: [
+      { seatNumber: { type: String, required: true }, gender: { type: String, enum: ["male", "female"] } },
+    ],
     expiresAt: { type: Date, required: true },
   },
   { timestamps: true }

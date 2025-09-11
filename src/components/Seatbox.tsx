@@ -1,32 +1,50 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 interface DummySeatBoxProps {
   seatNum: string;
-  reserved?: boolean;
-  gender?: "male" | "female" | null;
-  isSelected?: boolean;
+  booked: boolean;
+  held: boolean;
+  available: boolean;
   onSeatClick: (seatNumber: string, gender: "male" | "female") => void;
 }
 
-export const DummySeatBox = ({
+const Seatbox = ({
   seatNum,
-  reserved = false,
-  gender = null,
-  isSelected = false,
+  booked = false,
+  held = false,
+  available = false,
   onSeatClick,
 }: DummySeatBoxProps) => {
-  // Seat coloring logic
-  const seatColor =
-    reserved || isSelected
-      ? gender === "male"
-        ? "bg-[#364F6B] text-white"
-        : gender === "female"
-        ? "bg-[#FC5185] text-white"
-        : "bg-yellow-400 text-white" // fallback if selected but gender not chosen
-      : "bg-[#F5F5F5] text-gray-800";
+  const [selectedGender, setSelectedGender] = useState<"male" | "female" | null>(null);
+  let seatColor = booked
+    ? "bg-red-100 text-red-700 border border-red-300 cursor-not-allowed"
+    : held
+    ? "bg-amber-100 text-amber-700 border border-amber-300 cursor-not-allowed"
+    : available
+    ? "bg-emerald-100 text-emerald-700 border border-emerald-300 hover:bg-emerald-200 hover:shadow-md cursor-pointer"
+    : "bg-gray-100 text-gray-700 border border-gray-300";
 
+  // override with gender selection
+  if (selectedGender === "male") {
+    seatColor = "bg-[#364F6B] text-white border border-[#2c3e50]";
+  } else if (selectedGender === "female") {
+    seatColor = "bg-[#FC5185] text-white border border-[#e84874]";
+  }
+
+  // Disable popover for booked or held seats
+  if (booked || held) {
+    return (
+      <div
+        className={`w-10 h-10 flex items-center justify-center rounded-lg text-sm font-semibold transition-all ${seatColor}`}
+      >
+        {seatNum}
+      </div>
+    );
+  }
+
+  // Popover only for available seats
   return (
     <Popover>
       <PopoverTrigger asChild>
@@ -37,7 +55,6 @@ export const DummySeatBox = ({
         </div>
       </PopoverTrigger>
 
-      {/* Gender Selection Popover */}
       <PopoverContent side="top" align="center" className="w-64">
         <p className="font-medium text-sm text-gray-700">Select Gender for Seat</p>
         <div className="flex justify-around gap-3 mt-3">
@@ -45,7 +62,10 @@ export const DummySeatBox = ({
             <div
               key={g}
               className="text-center p-2 rounded cursor-pointer hover:bg-gray-100"
-              onClick={() => onSeatClick(seatNum, g)}
+              onClick={() => {
+                setSelectedGender(g); // update background instantly
+                onSeatClick(seatNum, g);
+              }}
             >
               <div className="flex items-center gap-2">
                 <div
@@ -60,3 +80,5 @@ export const DummySeatBox = ({
     </Popover>
   );
 };
+
+export default Seatbox;

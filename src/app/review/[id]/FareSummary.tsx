@@ -19,12 +19,13 @@ export default function FareSummary({ trip }: { trip: ITripPopulated }) {
     const res = await fetch("/api/checkout", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ amount: trip.baseFare, quantity: seats }),
+      body: JSON.stringify({ amount: trip.baseFare * seats, quantity: seats }),
     });
     const data = await res.json();
+    console.log("checkout session", data);
 
     const stripe = await stripePromise;
-    await stripe?.redirectToCheckout({ sessionId: data.id });
+    await stripe?.redirectToCheckout({ sessionId: data.data.id });
     setLoading(false);
   };
 
