@@ -3,6 +3,7 @@ import { Schema, Types, model, models } from "mongoose";
 export interface ISeatLayout {
   _id?: Types.ObjectId;
   seatNumber: string;
+  gender: string;
   class: string;
   position?: string;
 }

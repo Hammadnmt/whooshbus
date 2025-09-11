@@ -21,6 +21,7 @@ const tripService = {
       const start = startOfDay(selectedDate);
       const end = endOfDay(selectedDate);
       const route: IRoute = await routeService.getRoute(origin, destination);
+
       const filter = {
         route: route._id,
         departureAt: { $gte: start, $lte: end },

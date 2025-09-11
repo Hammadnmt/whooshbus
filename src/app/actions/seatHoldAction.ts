@@ -2,21 +2,54 @@
 
 import { SeatSelection } from "@/context/BookingContext";
 import { SeatHold } from "@/models/SeatHold";
-import { Types } from "mongoose";
+import { startSession, Types } from "mongoose";
+
 export async function seatHoldAction(tripId: Types.ObjectId, seatData: SeatSelection[]) {
-  // Call your service to hold seats
+  const session = await startSession();
   try {
-    await SeatHold.create({
-      trip: tripId,
-      // user: new Types.ObjectId(), // Replace with actual user ID
-      user: new Types.ObjectId("68c032da83e6e400c8620414"), // Replace with actual user ID
-      seats: seatData.map((seat) => ({ seatNumber: seat.seat, gender: seat.gender })),
-      //hold for 10 seconds for testing
-      expiresAt: new Date(Date.now() + 10 * 1000),
-    });
-    return { success: true, message: "Success" };
+    session.startTransaction();
+
+    // Optionally check if seats are already held
+    const existingHold = await SeatHold.findOne(
+      {
+        trip: tripId,
+        seats: {
+          $elemMatch: {
+            seatNumber: { $in: seatData.map((s) => s.seat) },
+          },
+        },
+        expiresAt: { $gt: new Date() },
+      },
+      null,
+      { session }
+    );
+
+    if (existingHold) {
+      await session.abortTransaction();
+      session.endSession();
+      return { success: false, message: "Some seats are already held" };
+    }
+
+    // Create seat hold inside the transaction
+    await SeatHold.create(
+      [
+        {
+          trip: tripId,
+          user: new Types.ObjectId("68c032da83e6e400c8620414"), // Replace with actual user ID
+          seats: seatData.map((seat) => ({ seatNumber: seat.seat, gender: seat.gender })),
+          expiresAt: new Date(Date.now() + 5 * 10 * 1000), // 10 min hold
+        },
+      ],
+      { session }
+    );
+
+    await session.commitTransaction();
+    return { success: true, message: "Seats held successfully" };
   } catch (error) {
+    await session.abortTransaction();
     console.error("Error holding seats:", error);
     return { success: false, message: "Failed to hold seats" };
+  } finally {
+    session.endSession();
   }
 }
