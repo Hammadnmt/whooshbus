@@ -68,7 +68,14 @@ export default function Search() {
         transition={{ duration: 0.6 }}
         className="w-full max-w-6xl p-8 bg-white/90 backdrop-blur-md rounded-3xl shadow-xl border border-gray-200 space-y-6"
       >
-        <form action={handleSubmit} className="flex flex-col gap-5 ">
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            const formData = new FormData(e.currentTarget);
+            handleSubmit(formData);
+          }}
+          className="flex flex-col gap-5 "
+        >
           {/* Origin */}
           <div className="flex flex-wrap justify-center gap-6">
             <Select name="origin">
