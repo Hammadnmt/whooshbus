@@ -13,5 +13,6 @@ export async function searchTrips(formData: FormData, date: Date | null) {
   );
 
   const trips = await res.json();
+  console.log("trips in action", trips);
   return trips;
 }
