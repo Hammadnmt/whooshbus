@@ -32,6 +32,7 @@ export default function Search() {
   ];
   const handleSubmit = async (formData: FormData) => {
     const trips = await searchTrips(formData, date);
+    console.log("trips in submit handler",trips);
     if (trips?.data && trips?.data.length === 0) {
       toast.warning(trips.message);
       return;
