@@ -1,10 +1,7 @@
-import { connectDB } from "@/lib/db";
 import { Route } from "@/models/Route";
-
 const routeService = {
   getRoute: async (origin: string, destination: string) => {
     try {
-      await connectDB();
       const filter = {
         originStation: origin,
         destinationStation: destination,

@@ -10,16 +10,16 @@ const tripService = {
   searchTrips: async ({
     origin,
     destination,
-    selectedDate,
+    end,
+    start,
   }: {
     origin: string;
     destination: string;
-    selectedDate: Date;
+    end: Date;
+    start: Date;
   }) => {
     try {
       await connectDB();
-      const start = startOfDay(selectedDate);
-      const end = endOfDay(selectedDate);
       const route: IRoute = await routeService.getRoute(origin, destination);
 
       const filter = {

@@ -2,6 +2,7 @@ import { NextRequest } from "next/server";
 import tripService from "@/services/tripService";
 import { handleApiError } from "@/utils/errorHandler";
 import { errorResponse, successResponse } from "@/utils/apiResponse";
+import moment from "moment";
 
 export async function GET(request: NextRequest) {
   try {
@@ -12,11 +13,9 @@ export async function GET(request: NextRequest) {
     if (!origin || !destination || !date) {
       return errorResponse("Missing Origin and Destination", 400);
     }
-    const selectedDate = new Date(date);
-    if (isNaN(selectedDate.getTime())) {
-      return errorResponse("Enter Valid Date", 400);
-    }
-    const trips = await tripService.searchTrips({ origin, destination, selectedDate });
+    const start = moment.utc(date).startOf("day").toDate();
+    const end = moment.utc(date).endOf("day").toDate();
+    const trips = await tripService.searchTrips({ origin, destination, end, start });
 
     return successResponse(trips, "Fetched Successfully");
   } catch (error) {

@@ -31,8 +31,11 @@ export default function Search() {
     "Gujranwala",
   ];
   const handleSubmit = async (formData: FormData) => {
-    const trips = await searchTrips(formData, date);
-    console.log("trips in submit handler",trips);
+    const trips = await searchTrips(
+      formData,
+      date?.toLocaleDateString("en-CA") ? new Date(date?.toLocaleDateString("en-CA")) : null
+    );
+    console.log("trips in submit handler", trips);
     if (trips?.data && trips?.data.length === 0) {
       toast.warning(trips.message);
       return;
