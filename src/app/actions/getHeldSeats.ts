@@ -1,10 +1,12 @@
 "use server";
+import { connectDB } from "@/lib/db";
 import { SeatHold } from "@/models/SeatHold";
 import moment from "moment";
 import { Types } from "mongoose";
 
 export async function getHeldSeats(tripId: Types.ObjectId) {
   try {
+    await connectDB();
     const holds = await SeatHold.find(
       {
         trip: tripId,
