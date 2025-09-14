@@ -12,27 +12,42 @@ interface BookingContextType {
   addSeat: (seat: string, gender: "male" | "female") => void;
   removeSeat: (seat: string) => void;
   clearSeats: () => void;
+  isReady: boolean; // ✅ tells client that hydration is complete
 }
 
-// -----------------
-// Context
-// -----------------
 const BookingContext = createContext<BookingContextType | undefined>(undefined);
 
 export const BookingProvider = ({ children }: { children: React.ReactNode }) => {
   const [seatData, setSeatData] = useState<SeatSelection[]>([]);
+  const [isReady, setIsReady] = useState(false);
 
-  // Save to localStorage whenever seatData changes
+  // ✅ Hydrate only after client mounts
+  useEffect(() => {
+    const saved = localStorage.getItem("bookingData");
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) {
+          setSeatData(parsed);
+        } else {
+          console.warn("bookingData in localStorage is not an array, resetting...");
+          setSeatData([]);
+        }
+      } catch (err) {
+        console.warn("Invalid bookingData in localStorage", err);
+        setSeatData([]);
+      }
+    }
+    setIsReady(true); // client mounted
+  }, []);
+
+  // Save whenever seatData changes (but only after mount)
   useEffect(() => {
     localStorage.setItem("bookingData", JSON.stringify(seatData));
   }, [seatData]);
 
-  // -----------------
-  // Handlers
-  // -----------------
   const addSeat = (seat: string, gender: "male" | "female") => {
     setSeatData((prev) => {
-      // if seat already selected, update gender
       const exists = prev.find((s) => s.seat === seat);
       if (exists) {
         return prev.map((s) => (s.seat === seat ? { seat, gender } : s));
@@ -48,7 +63,7 @@ export const BookingProvider = ({ children }: { children: React.ReactNode }) => 
   const clearSeats = () => setSeatData([]);
 
   return (
-    <BookingContext.Provider value={{ seatData, addSeat, removeSeat, clearSeats }}>
+    <BookingContext.Provider value={{ seatData, addSeat, removeSeat, clearSeats, isReady }}>
       {children}
     </BookingContext.Provider>
   );

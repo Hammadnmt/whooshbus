@@ -35,7 +35,6 @@ export default function Search() {
       formData,
       date?.toLocaleDateString("en-CA") ? new Date(date?.toLocaleDateString("en-CA")) : null
     );
-    console.log("trips in submit handler", trips);
     if (trips?.data && trips?.data.length === 0) {
       toast.warning(trips.message);
       return;

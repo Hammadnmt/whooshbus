@@ -24,15 +24,15 @@ import SeatLegend from "./SeatLegend";
 export default function TripCard({ trip }: { trip: ITripPopulated }) {
   const { seatData, addSeat } = useBooking();
   const router = useRouter();
-
   const [heldSeats, setHeldSeats] = useState<string[]>([]);
-  console.log("heldSeats", heldSeats);
+  const [bookedSeats, setBookedSeats] = useState<string[]>([]);
 
+  // fetch held seats
   useEffect(() => {
     async function fetchHeld() {
       const result = await getHeldSeats(trip._id);
       if (result.success && result.data) {
-        setHeldSeats(result?.data?.map((s) => s.seatNumber));
+        setHeldSeats(result.data.map((s) => s.seatNumber));
       } else {
         toast.error(result.message || "Failed to fetch held seats");
       }
@@ -42,39 +42,42 @@ export default function TripCard({ trip }: { trip: ITripPopulated }) {
     return () => clearInterval(interval);
   }, [trip._id]);
 
+  // TODO: Replace this with API call to fetch real booked seats
+  useEffect(() => {
+    setBookedSeats(["1A", "2A", "5A", "6A", "7A"]); // demo data
+  }, []);
+
   const handleProceed = async () => {
-    if (seatData.length === 0) return;
+    if (seatData.length === 0) {
+      toast.error("Please select at least one seat");
+      return;
+    }
     const result = await seatHoldAction(trip._id, seatData);
     if (result.success) {
       toast.success(result.message);
+      router.push(`/review/${trip._id}`);
+    } else {
+      toast.error(result.message || "Failed to hold seats");
     }
-    router.push(`/review/${trip._id}`);
   };
 
   // Format timings
   const depDate = new Date(trip.departureAt);
   const arrDate = new Date(trip.arrivalAt);
 
-  const booked = [
-    { seatNumber: "1A" },
-    { seatNumber: "2A" },
-    { seatNumber: "5A" },
-    { seatNumber: "6A" },
-    { seatNumber: "7A" },
-  ];
-  const bookedSet = new Set(booked.map((seat) => seat.seatNumber));
+  const bookedSet = new Set(bookedSeats);
   const heldSet = new Set(heldSeats);
+  const selectedSet = new Set(seatData.map((s) => s.seat));
 
   const finalSeats = trip.bus.seatLayout.map((seat) => {
     const seatNum = seat.seatNumber;
-    const isBooked = bookedSet.has(seatNum);
-    const isHeld = heldSet.has(seatNum);
-
     return {
       seatNum,
-      booked: isBooked,
-      held: isHeld,
-      available: !isBooked && !isHeld,
+      booked: bookedSet.has(seatNum),
+      held: heldSet.has(seatNum),
+      available: !bookedSet.has(seatNum) && !heldSet.has(seatNum),
+      selected: selectedSet.has(seatNum),
+      gender: seatData.find((s) => s.seat === seatNum)?.gender || null,
     };
   });
 
@@ -86,8 +89,13 @@ export default function TripCard({ trip }: { trip: ITripPopulated }) {
           <div className="flex flex-col sm:flex-row gap-12 border-b lg:border-b-0 lg:border-r border-gray-200 pb-6 lg:pb-0 lg:pr-8">
             {/* Departure */}
             <div className="flex flex-col items-center lg:items-start text-center lg:text-left gap-1">
-              <small className="text-gray-500 text-xs">{format(depDate, "dd MMM, yyyy")}</small>
-              <h4 className="text-gray-800 font-bold text-lg flex items-center self-stretch gap-1">
+              <small className="text-gray-500 text-xs" suppressHydrationWarning>
+                {format(depDate, "dd MMM, yyyy")}
+              </small>
+              <h4
+                className="text-gray-800 font-bold text-lg flex items-center self-stretch gap-1"
+                suppressHydrationWarning
+              >
                 <Clock className="h-5 w-5 text-[#541554]" /> {format(depDate, "hh:mm")}
               </h4>
               <p className="text-sm text-gray-600 flex items-center gap-1">
@@ -101,8 +109,13 @@ export default function TripCard({ trip }: { trip: ITripPopulated }) {
 
             {/* Arrival */}
             <div className="flex flex-col items-center lg:items-start text-center lg:text-left gap-1">
-              <small className="text-gray-500 text-xs">{format(arrDate, "dd MMM, yyyy")}</small>
-              <h4 className="text-gray-800 font-bold text-lg flex items-center gap-1">
+              <small className="text-gray-500 text-xs" suppressHydrationWarning>
+                {format(arrDate, "dd MMM, yyyy")}
+              </small>
+              <h4
+                className="text-gray-800 font-bold text-lg flex items-center gap-1"
+                suppressHydrationWarning
+              >
                 <Clock className="h-5 w-5 text-[#541554]" /> {format(arrDate, "hh:mm")}
               </h4>
               <p className="text-sm text-gray-600 flex items-center gap-1">
@@ -145,6 +158,8 @@ export default function TripCard({ trip }: { trip: ITripPopulated }) {
               available={seat.available}
               booked={seat.booked}
               held={seat.held}
+              isSelected={seat.selected}
+              gender={seat.gender}
               onSeatClick={addSeat}
               seatNum={seat.seatNum}
               key={seat.seatNum}

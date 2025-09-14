@@ -1,16 +1,27 @@
 "use client";
 
+import FareSummarySkeleton from "@/components/FareSummarySkeleton";
 import { Button } from "@/components/ui/button";
 import { useBooking } from "@/context/BookingContext";
 import { ITripPopulated } from "@/models/Trip";
 import { loadStripe } from "@stripe/stripe-js";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
 export default function FareSummary({ trip }: { trip: ITripPopulated }) {
   const [loading, setLoading] = useState(false);
-  const { seatData } = useBooking();
+  const { seatData, isReady } = useBooking();
+
+  useEffect(() => {
+    if (!isReady) {
+      Fallback();
+    }
+  }, [isReady]);
+  function Fallback() {
+    return <FareSummarySkeleton />;
+  }
+
   const seats = seatData.length;
   const total = trip.baseFare * seats;
 
