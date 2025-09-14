@@ -1,15 +1,14 @@
 "use server";
-
 import { SeatHold } from "@/models/SeatHold";
+import moment from "moment";
 import { Types } from "mongoose";
 
 export async function getHeldSeats(tripId: Types.ObjectId) {
   try {
-    // Fetch active holds for the trip
     const holds = await SeatHold.find(
       {
         trip: tripId,
-        expiresAt: { $gt: new Date() }, // still valid
+        expiresAt: { $gt: moment().format() }, // still valid
       },
       { seats: 1, _id: 0 } // only seats
     ).lean();

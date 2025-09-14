@@ -1,10 +1,13 @@
 "use server";
 
 import { SeatSelection } from "@/context/BookingContext";
+import { connectDB } from "@/lib/db";
 import { SeatHold } from "@/models/SeatHold";
+import moment from "moment";
 import { startSession, Types } from "mongoose";
 
 export async function seatHoldAction(tripId: Types.ObjectId, seatData: SeatSelection[]) {
+  await connectDB();
   const session = await startSession();
   try {
     session.startTransaction();
@@ -18,7 +21,7 @@ export async function seatHoldAction(tripId: Types.ObjectId, seatData: SeatSelec
             seatNumber: { $in: seatData.map((s) => s.seat) },
           },
         },
-        expiresAt: { $gt: new Date() },
+        expiresAt: { $gt: moment().format() }, // still valid
       },
       null,
       { session }

@@ -1,7 +1,6 @@
 import { IRoute } from "@/models/Route";
 import { ITripPopulated, Trip } from "@/models/Trip";
 import routeService from "./routeService";
-import { endOfDay, startOfDay } from "date-fns";
 import "@/models/Bus";
 import "@/models/Route";
 import { connectDB } from "@/lib/db";
