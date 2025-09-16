@@ -4,9 +4,19 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { SeatSelection } from "@/context/BookingContext";
 import { Types } from "mongoose";
 
+interface Seat {
+  _id: Types.ObjectId;
+  seatNumber: string;
+  booked: boolean;
+  held: boolean;
+  available: boolean;
+  selected: boolean;
+  gender?: "male" | "female" | null;
+  class: string;
+}
 interface SeatboxProps {
   busId: Types.ObjectId;
-  seat: SeatSelection["seat"]; // includes _id, seatNumber, etc.
+  seat: Seat; // includes _id, seatNumber, etc.
   seatNum: string;
   booked: boolean;
   held: boolean;

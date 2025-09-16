@@ -1,7 +1,7 @@
 import { Schema, Types, model, models } from "mongoose";
 
 export interface ISeatLayout {
-  _id?: Types.ObjectId;
+  _id: Types.ObjectId;
   seatNumber: string;
   gender: "male" | "female";
   class: string;

@@ -10,7 +10,7 @@ export default function Badges({ seatsData }: { seatsData: SeatSelection[] }) {
   return (
     <>
       {seatsData.map((s) => (
-        <div key={s.seat._id} className="relative inline-block">
+        <div key={s.seat._id?.toString()} className="relative inline-block">
           <Badge
             className={cn(
               "relative text-sm flex items-center gap-1 pr-5",
