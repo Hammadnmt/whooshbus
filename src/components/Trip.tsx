@@ -20,7 +20,6 @@ import { seatHoldAction } from "@/app/actions/seatHoldAction";
 import { getHeldSeats } from "@/app/actions/getHeldSeats";
 import { toast } from "sonner";
 import SeatLegend from "./SeatLegend";
-import Badges from "./Badges";
 
 export default function TripCard({ trip }: { trip: ITripPopulated }) {
   const { seatData, addSeat } = useBooking();
@@ -68,19 +67,17 @@ export default function TripCard({ trip }: { trip: ITripPopulated }) {
 
   const bookedSet = new Set(bookedSeats);
   const heldSet = new Set(heldSeats);
-
-  // ✅ Selected seats are now tracked by seat._id (not seatNumber)
-  const selectedSet = new Set(seatData.filter((s) => s.busId === trip.bus._id).map((s) => s.seat._id));
-  console.log("Selected Seats:", selectedSet);
+  const selectedSet = new Set(seatData.map((s) => s.seat));
 
   const finalSeats = trip.bus.seatLayout.map((seat) => {
+    const seatNum = seat.seatNumber;
     return {
-      ...seat, // includes _id, seatNumber, etc.
-      booked: bookedSet.has(seat.seatNumber),
-      held: heldSet.has(seat.seatNumber),
-      available: !bookedSet.has(seat.seatNumber) && !heldSet.has(seat.seatNumber),
-      selected: selectedSet.has(seat._id),
-      gender: seatData.find((s) => s.seat._id === seat._id)?.seat.gender,
+      seatNum,
+      booked: bookedSet.has(seatNum),
+      held: heldSet.has(seatNum),
+      available: !bookedSet.has(seatNum) && !heldSet.has(seatNum),
+      selected: selectedSet.has(seatNum),
+      gender: seatData.find((s) => s.seat === seatNum)?.gender || null,
     };
   });
 
@@ -158,24 +155,19 @@ export default function TripCard({ trip }: { trip: ITripPopulated }) {
         <div className="mt-4 grid grid-cols-5 gap-3">
           {finalSeats.map((seat) => (
             <Seatbox
-              busId={trip.bus._id}
-              seat={seat}
               available={seat.available}
               booked={seat.booked}
               held={seat.held}
               isSelected={seat.selected}
               gender={seat.gender}
               onSeatClick={addSeat}
-              seatNum={seat.seatNumber}
-              key={`${trip.bus._id}-${seat._id}`} // ✅ unique key per bus+seat
+              seatNum={seat.seatNum}
+              key={seat.seatNum}
             />
           ))}
         </div>
 
         <DialogFooter>
-          <div className="flex flex-wrap gap-2 mr-auto">
-            <Badges seatsData={seatData} />
-          </div>
           <Button onClick={handleProceed} className="bg-green-700 hover:bg-green-800 text-white">
             Proceed
           </Button>

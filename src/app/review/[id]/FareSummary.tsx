@@ -22,7 +22,7 @@ export default function FareSummary({ trip }: { trip: ITripPopulated }) {
     return <FareSummarySkeleton />;
   }
 
-  const seats = seatData.filter((s) => s.busId === trip.bus._id).length;
+  const seats = seatData.length;
   const total = trip.baseFare * seats;
 
   const handleCheckout = async () => {
@@ -45,7 +45,7 @@ export default function FareSummary({ trip }: { trip: ITripPopulated }) {
       <h2 className="text-lg font-semibold text-gray-800">Fare Summary</h2>
       <div className="flex justify-between text-sm">
         <span>Seats Selected</span>
-        <span suppressHydrationWarning>{seats}</span>
+        <span>{seats}</span>
       </div>
       <div className="flex justify-between text-sm">
         <span>Fare per Seat</span>
@@ -53,7 +53,7 @@ export default function FareSummary({ trip }: { trip: ITripPopulated }) {
       </div>
       <div className="flex justify-between text-base font-semibold border-t pt-2">
         <span>Total Amount</span>
-        <span suppressHydrationWarning>Rs. {total}</span>
+        <span>Rs. {total}</span>
       </div>
       <Button
         onClick={handleCheckout}

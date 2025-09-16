@@ -45,7 +45,7 @@ export default function Page() {
   }
   const handleGoogleLogin = () => {
     signIn("google", {
-      callbackUrl: "/search",
+      callbackUrl: "/",
     })
       .then((res) => {
         if (res?.ok) {

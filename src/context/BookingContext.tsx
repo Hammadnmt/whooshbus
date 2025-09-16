@@ -1,17 +1,16 @@
 "use client";
 
-import { IBus, ISeatLayout } from "@/models/Bus";
 import React, { createContext, useContext, useEffect, useState } from "react";
 
 export interface SeatSelection {
-  busId: IBus["_id"];
-  seat: ISeatLayout;
+  seat: string;
+  gender: "male" | "female";
 }
 
 interface BookingContextType {
   seatData: SeatSelection[];
-  addSeat: (data: SeatSelection) => void;
-  removeSeat: (data: SeatSelection) => void;
+  addSeat: (seat: string, gender: "male" | "female") => void;
+  removeSeat: (seat: string) => void;
   clearSeats: () => void;
   isReady: boolean; // ✅ tells client that hydration is complete
 }
@@ -47,39 +46,24 @@ export const BookingProvider = ({ children }: { children: React.ReactNode }) => 
     localStorage.setItem("bookingData", JSON.stringify(seatData));
   }, [seatData]);
 
-  // const addSeat = (seat: string, gender: "male" | "female") => {
-  //   setSeatData((prev) => {
-  //     const exists = prev.find((s) => s.seat === seat);
-  //     if (exists) {
-  //       return prev.map((s) => (s.seat === seat ? { seat, gender } : s));
-  //     }
-  //     return [...prev, { seat, gender }];
-  //   });
-  // };
-  const addSeat = (data: SeatSelection) => {
-    console.log("Adding/Updating Seat:", data);
+  const addSeat = (seat: string, gender: "male" | "female") => {
     setSeatData((prev) => {
-      const exists = prev.find((s) => s.seat.seatNumber === data.seat.seatNumber && s.busId === data.busId);
+      const exists = prev.find((s) => s.seat === seat);
       if (exists) {
-        return prev.map((s) =>
-          s.seat.seatNumber === data.seat.seatNumber && s.busId === data.busId
-            ? { ...s, ...data } // ✅ this now includes updated gender
-            : s
-        );
+        return prev.map((s) => (s.seat === seat ? { seat, gender } : s));
       }
-      console.log("Prev", prev);
-      return [...prev, data];
+      return [...prev, { seat, gender }];
     });
   };
 
-  const removeSeat = (data: SeatSelection) => {
-    setSeatData((prev) => prev.filter((s) => s.seat._id !== data.seat._id));
+  const removeSeat = (seat: string) => {
+    setSeatData((prev) => prev.filter((s) => s.seat !== seat));
   };
 
   const clearSeats = () => setSeatData([]);
 
   return (
-    <BookingContext.Provider value={{ seatData, addSeat, clearSeats, removeSeat, isReady }}>
+    <BookingContext.Provider value={{ seatData, addSeat, removeSeat, clearSeats, isReady }}>
       {children}
     </BookingContext.Provider>
   );
