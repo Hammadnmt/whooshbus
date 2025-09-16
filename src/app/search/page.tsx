@@ -42,6 +42,7 @@ export default function Search() {
     toast(trips.message);
     setTrips(trips.data);
   };
+  console.log("Trips:", trips);
 
   return (
     <div className="relative flex flex-col items-center min-h-screen bg-gradient-to-b from-[#f9f9ff] via-[#f5f5fc] to-[#f8f8f8]">

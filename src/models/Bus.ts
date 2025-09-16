@@ -3,12 +3,13 @@ import { Schema, Types, model, models } from "mongoose";
 export interface ISeatLayout {
   _id?: Types.ObjectId;
   seatNumber: string;
-  gender: string;
+  gender: "male" | "female";
   class: string;
   position?: string;
 }
 
 export interface IBus extends Document {
+  _id: Types.ObjectId;
   regNumber: string;
   model?: string;
   capacity: number;

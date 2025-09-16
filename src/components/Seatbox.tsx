@@ -1,18 +1,24 @@
 "use client";
 import React from "react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { SeatSelection } from "@/context/BookingContext";
+import { Types } from "mongoose";
 
 interface SeatboxProps {
+  busId: Types.ObjectId;
+  seat: SeatSelection["seat"]; // includes _id, seatNumber, etc.
   seatNum: string;
   booked: boolean;
   held: boolean;
   available: boolean;
-  gender?: "male" | "female" | null; // controlled by parent
-  onSeatClick: (seatNumber: string, gender: "male" | "female") => void;
+  gender?: "male" | "female" | null;
+  onSeatClick: (data: SeatSelection) => void;
   isSelected: boolean;
 }
 
 const Seatbox = ({
+  busId,
+  seat,
   seatNum,
   booked = false,
   held = false,
@@ -20,6 +26,7 @@ const Seatbox = ({
   gender = null,
   onSeatClick,
 }: SeatboxProps) => {
+  console.log("Seat in seatBox:", seat);
   let seatColor = booked
     ? "bg-red-100 text-red-700 border border-red-300 cursor-not-allowed"
     : held
@@ -35,7 +42,7 @@ const Seatbox = ({
     seatColor = "bg-[#FC5185] text-white border border-[#e84874]";
   }
 
-  // Disable popover for booked or held seats
+  // booked or held seats → no interaction
   if (booked || held) {
     return (
       <div
@@ -63,9 +70,7 @@ const Seatbox = ({
             <div
               key={g}
               className="text-center p-2 rounded cursor-pointer hover:bg-gray-100"
-              onClick={() => {
-                onSeatClick(seatNum, g); // only parent handles state
-              }}
+              onClick={() => onSeatClick({ busId, seat: { ...seat, gender: g } })}
             >
               <div className="flex items-center gap-2">
                 <div

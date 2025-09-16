@@ -18,7 +18,7 @@ export async function seatHoldAction(tripId: Types.ObjectId, seatData: SeatSelec
         trip: tripId,
         seats: {
           $elemMatch: {
-            seatNumber: { $in: seatData.map((s) => s.seat) },
+            seatNumber: { $in: seatData.map((s) => s.seat.seatNumber) },
           },
         },
         expiresAt: { $gt: moment().format() }, // still valid
@@ -34,12 +34,13 @@ export async function seatHoldAction(tripId: Types.ObjectId, seatData: SeatSelec
     }
 
     // Create seat hold inside the transaction
+    console.log("Holding seats:", seatData);
     await SeatHold.create(
       [
         {
           trip: tripId,
           user: new Types.ObjectId("68c032da83e6e400c8620414"), // Replace with actual user ID
-          seats: seatData.map((seat) => ({ seatNumber: seat.seat, gender: seat.gender })),
+          seats: seatData.map((seat) => ({ seatNumber: seat.seat.seatNumber, gender: seat.seat.gender })),
           expiresAt: new Date(Date.now() + 5 * 10 * 1000), // 10 min hold
         },
       ],
