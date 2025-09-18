@@ -10,27 +10,42 @@ import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import GoogleIcon from "../../../public/googleSvg";
 
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { loginSchema, registerSchema, LoginData, RegisterData } from "@/lib/validations";
+
 export default function Page() {
   const router = useRouter();
-  async function handleLogin(formData: FormData) {
+
+  // 🔹 Login form
+  const {
+    register: loginRegister,
+    handleSubmit: handleLoginSubmit,
+    formState: { errors: loginErrors },
+  } = useForm<LoginData>({ resolver: zodResolver(loginSchema) });
+
+  // 🔹 Register form
+  const {
+    register: regRegister,
+    handleSubmit: handleRegisterSubmit,
+    formState: { errors: regErrors },
+  } = useForm<RegisterData>({ resolver: zodResolver(registerSchema) });
+
+  async function handleLogin(data: LoginData) {
     try {
-      const email = formData.get("email");
-      const password = formData.get("password");
-      signIn("credentials", { email, password, callbackUrl: "/search", redirect: true })
-        .then((res) => {
-          if (res?.ok) {
-            toast.success("Logged in successfully!");
-          }
-        })
-        .catch((err) => {
-          toast.error("Login failed. Please check your credentials.", err.message);
-        });
-    } catch (error) {
-      console.log("error", error);
+      const { email, password } = data;
+      const res = await signIn("credentials", { email, password, callbackUrl: "/search", redirect: true });
+      if (res?.ok) toast.success("Logged in successfully!");
+      else toast.error("Login failed. Please check your credentials.");
+    } catch (err) {
+      toast.error("Login failed.");
     }
   }
-  async function handleRegister(formData: FormData) {
+
+  async function handleRegister(data: RegisterData) {
     try {
+      const formData = new FormData();
+      Object.entries(data).forEach(([key, value]) => formData.append(key, value));
       const result = await registerAction(formData);
       if (result?.success) {
         toast.success(result?.message);
@@ -39,22 +54,14 @@ export default function Page() {
         toast.error(result?.message || "Registration failed");
       }
     } catch (error) {
-      console.error("SignUp error:", error);
-      toast.error("An unexpected error occurred. Please try again.");
+      toast.error("An unexpected error occurred.");
     }
   }
+
   const handleGoogleLogin = () => {
-    signIn("google", {
-      callbackUrl: "/search",
-    })
-      .then((res) => {
-        if (res?.ok) {
-          toast.success("Logged in with Google successfully!");
-        }
-      })
-      .catch((err) => {
-        toast.error("Google login failed. Please try again.", err.message);
-      });
+    signIn("google", { callbackUrl: "/search" })
+      .then((res) => res?.ok && toast.success("Logged in with Google successfully!"))
+      .catch(() => toast.error("Google login failed. Please try again."));
   };
 
   return (
@@ -75,8 +82,6 @@ export default function Page() {
             Built on reliability, transparency, and your satisfaction.
           </p>
         </motion.div>
-
-        {/* Decorative element */}
         <motion.div
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 0.2, scale: 1 }}
@@ -113,22 +118,37 @@ export default function Page() {
                 <p className="text-sm text-gray-500 mt-1">Your journey starts here</p>
               </CardHeader>
               <CardContent>
-                <form action={handleLogin} className="space-y-4">
-                  <Input type="email" name="email" placeholder="you@example.com" className="bg-gray-100" />
-                  <Input type="password" name="password" placeholder="••••••••" className="bg-gray-100" />
+                <form onSubmit={handleLoginSubmit(handleLogin)} className="space-y-4">
+                  <div>
+                    <Input
+                      type="email"
+                      placeholder="you@example.com"
+                      className="bg-gray-100"
+                      {...loginRegister("email")}
+                    />
+                    {loginErrors.email && <p className="text-xs text-red-500">{loginErrors.email.message}</p>}
+                  </div>
+                  <div>
+                    <Input
+                      type="password"
+                      placeholder="••••••••"
+                      className="bg-gray-100"
+                      {...loginRegister("password")}
+                    />
+                    {loginErrors.password && (
+                      <p className="text-xs text-red-500">{loginErrors.password.message}</p>
+                    )}
+                  </div>
                   <Button className="w-full bg-[#611f69] hover:bg-[#531f5c]" type="submit">
                     Continue →
                   </Button>
                 </form>
               </CardContent>
               <CardFooter className="flex flex-col gap-4 mt-4">
-                {/* Divider */}
                 <div className="flex items-center gap-2 text-xs text-gray-400">
-                  <span className="flex-1 h-px bg-gray-200" />
-                  or continue with
+                  <span className="flex-1 h-px bg-gray-200" /> or continue with{" "}
                   <span className="flex-1 h-px bg-gray-200" />
                 </div>
-
                 <Button
                   className="flex justify-center items-center gap-2 border rounded-md px-4 py-2 bg-white cursor-pointer hover:bg-accent"
                   onClick={handleGoogleLogin}
@@ -150,14 +170,36 @@ export default function Page() {
                 <p className="text-sm text-gray-500 mt-1">Start your journey with us</p>
               </CardHeader>
               <CardContent>
-                <form action={handleRegister} className="space-y-4">
+                <form onSubmit={handleRegisterSubmit(handleRegister)} className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
-                    <Input name="fname" placeholder="First Name" className="bg-gray-100" />
-                    <Input name="lname" placeholder="Last Name" className="bg-gray-100" />
+                    <div>
+                      <Input placeholder="First Name" className="bg-gray-100" {...regRegister("fname")} />
+                      {regErrors.fname && <p className="text-xs text-red-500">{regErrors.fname.message}</p>}
+                    </div>
+                    <div>
+                      <Input placeholder="Last Name" className="bg-gray-100" {...regRegister("lname")} />
+                      {regErrors.lname && <p className="text-xs text-red-500">{regErrors.lname.message}</p>}
+                    </div>
                   </div>
-                  <Input name="email" placeholder="you@example.com" className="bg-gray-100" />
-                  <Input type="password" name="password" placeholder="Password" className="bg-gray-100" />
-                  <Input name="phone" placeholder="Phone Number" className="bg-gray-100" />
+                  <div>
+                    <Input placeholder="you@example.com" className="bg-gray-100" {...regRegister("email")} />
+                    {regErrors.email && <p className="text-xs text-red-500">{regErrors.email.message}</p>}
+                  </div>
+                  <div>
+                    <Input
+                      type="password"
+                      placeholder="Password"
+                      className="bg-gray-100"
+                      {...regRegister("password")}
+                    />
+                    {regErrors.password && (
+                      <p className="text-xs text-red-500">{regErrors.password.message}</p>
+                    )}
+                  </div>
+                  <div>
+                    <Input placeholder="Phone Number" className="bg-gray-100" {...regRegister("phone")} />
+                    {regErrors.phone && <p className="text-xs text-red-500">{regErrors.phone.message}</p>}
+                  </div>
                   <Button type="submit" className="w-full bg-[#611f69] hover:bg-[#531f5c]">
                     Sign Up →
                   </Button>
@@ -165,11 +207,9 @@ export default function Page() {
               </CardContent>
               <CardFooter className="flex flex-col gap-4 mt-4">
                 <div className="flex items-center gap-2 text-xs text-gray-400">
-                  <span className="flex-1 h-px bg-gray-200" />
-                  or continue with
+                  <span className="flex-1 h-px bg-gray-200" /> or continue with{" "}
                   <span className="flex-1 h-px bg-gray-200" />
                 </div>
-
                 <Button
                   className="flex justify-center items-center gap-2 border rounded-md px-4 py-2 bg-white cursor-pointer hover:bg-accent"
                   onClick={handleGoogleLogin}

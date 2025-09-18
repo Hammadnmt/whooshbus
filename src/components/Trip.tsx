@@ -68,10 +68,7 @@ export default function TripCard({ trip }: { trip: ITripPopulated }) {
 
   const bookedSet = new Set(bookedSeats);
   const heldSet = new Set(heldSeats);
-
-  // ✅ Selected seats are now tracked by seat._id (not seatNumber)
   const selectedSet = new Set(seatData.filter((s) => s.busId === trip.bus._id).map((s) => s.seat._id));
-  console.log("Selected Seats:", selectedSet);
 
   const finalSeats = trip.bus.seatLayout.map((seat) => {
     return {

@@ -36,7 +36,6 @@ const Seatbox = ({
   gender = null,
   onSeatClick,
 }: SeatboxProps) => {
-  console.log("Seat in seatBox:", seat);
   let seatColor = booked
     ? "bg-red-100 text-red-700 border border-red-300 cursor-not-allowed"
     : held

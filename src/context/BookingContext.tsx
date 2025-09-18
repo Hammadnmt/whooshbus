@@ -57,7 +57,6 @@ export const BookingProvider = ({ children }: { children: React.ReactNode }) => 
   //   });
   // };
   const addSeat = (data: SeatSelection) => {
-    console.log("Adding/Updating Seat:", data);
     setSeatData((prev) => {
       const exists = prev.find((s) => s.seat.seatNumber === data.seat.seatNumber && s.busId === data.busId);
       if (exists) {
@@ -67,7 +66,7 @@ export const BookingProvider = ({ children }: { children: React.ReactNode }) => 
             : s
         );
       }
-      console.log("Prev", prev);
+
       return [...prev, data];
     });
   };

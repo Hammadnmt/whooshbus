@@ -19,7 +19,7 @@ async function getTrip(id: string) {
   });
 
   if (!res.ok) {
-    throw new Error("Failed to fetch trip");
+    return <div>Failed to fetch trip data</div>;
   }
 
   const data = await res.json();

@@ -32,9 +32,6 @@ export async function seatHoldAction(tripId: Types.ObjectId, seatData: SeatSelec
       session.endSession();
       return { success: false, message: "Some seats are already held" };
     }
-
-    // Create seat hold inside the transaction
-    console.log("Holding seats:", seatData);
     await SeatHold.create(
       [
         {
